@@ -1,0 +1,264 @@
+.sidebar {
+display: flex;
+flex-direction: column;
+width: 260px;
+min-width: 260px;
+height: 100%;
+padding: 16px 12px 12px;
+background: #171717;
+color: #ececec;
+border-right: 1px solid #292929;
+transition: width 180ms ease, min-width 180ms ease;
+overflow: hidden;
+}
+
+.sidebar--collapsed {
+width: 68px;
+min-width: 68px;
+}
+
+.sidebar__top {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+min-height: 36px;
+margin-bottom: 24px;
+}
+
+.sidebar__brand {
+display: flex;
+align-items: center;
+gap: 10px;
+min-width: 0;
+font-size: 15px;
+font-weight: 650;
+white-space: nowrap;
+}
+
+.sidebar__logo {
+display: grid;
+place-items: center;
+flex-shrink: 0;
+width: 34px;
+height: 34px;
+color: #fff;
+background: #343434;
+border: 1px solid #484848;
+border-radius: 11px;
+}
+
+.icon-button,
+.sidebar__action,
+.sidebar__session {
+display: flex;
+align-items: center;
+gap: 11px;
+border: 0;
+color: inherit;
+background: transparent;
+cursor: pointer;
+}
+
+.icon-button {
+justify-content: center;
+flex-shrink: 0;
+width: 34px;
+height: 34px;
+border-radius: 8px;
+color: #aaa;
+}
+
+.icon-button:hover,
+.sidebar__session:hover {
+background: #292929;
+color: #fff;
+}
+
+.sidebar__actions {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.sidebar__action {
+min-height: 40px;
+padding: 0 11px;
+border-radius: 9px;
+font-size: 13px;
+font-weight: 550;
+white-space: nowrap;
+}
+
+.sidebar__action--primary {
+background: #272727;
+border: 1px solid #393939;
+}
+
+.sidebar__action--primary:hover {
+background: #333;
+}
+
+.sidebar__search {
+display: flex;
+align-items: center;
+gap: 9px;
+height: 38px;
+padding: 0 10px;
+color: #888;
+background: #202020;
+border: 1px solid #303030;
+border-radius: 8px;
+}
+
+.sidebar__search input {
+width: 100%;
+min-width: 0;
+color: #eee;
+background: transparent;
+border: 0;
+outline: 0;
+font: inherit;
+font-size: 12px;
+}
+
+.sidebar__search input::placeholder {
+color: #858585;
+}
+
+.sidebar__history {
+flex: 1;
+min-height: 0;
+margin-top: 26px;
+overflow-y: auto;
+overflow-x: hidden;
+}
+
+.sidebar__section-label {
+margin: 0 9px 10px;
+color: #858585;
+font-size: 11px;
+font-weight: 600;
+}
+
+.sidebar__session {
+width: 100%;
+min-height: 38px;
+padding: 0 10px;
+border-radius: 8px;
+text-align: left;
+font-size: 12.5px;
+white-space: nowrap;
+}
+
+.sidebar__session svg {
+flex-shrink: 0;
+}
+
+.sidebar__session span {
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.sidebar__session--active {
+background: #303030;
+color: #fff;
+}
+
+.sidebar__empty {
+padding: 0 9px;
+color: #777;
+font-size: 12px;
+line-height: 1.6;
+}
+
+.sidebar__bottom {
+display: flex;
+flex-direction: column;
+gap: 3px;
+padding-top: 12px;
+border-top: 1px solid #303030;
+}
+
+.sidebar__profile {
+display: flex;
+align-items: center;
+gap: 10px;
+min-height: 55px;
+margin-top: 8px;
+padding: 7px;
+border-radius: 9px;
+overflow: hidden;
+}
+
+.sidebar__avatar {
+display: grid;
+place-items: center;
+flex-shrink: 0;
+width: 34px;
+height: 34px;
+border-radius: 50%;
+background: #414141;
+color: #fff;
+font-size: 14px;
+font-weight: 650;
+}
+
+.sidebar__profile-info {
+display: flex;
+flex-direction: column;
+gap: 4px;
+min-width: 0;
+white-space: nowrap;
+}
+
+.sidebar__profile-name {
+font-size: 12px;
+font-weight: 600;
+}
+
+.sidebar__profile-subtitle {
+color: #929292;
+font-size: 10px;
+}
+
+.sidebar--collapsed .sidebar__top,
+.sidebar--collapsed .sidebar__brand,
+.sidebar--collapsed .sidebar__action,
+.sidebar--collapsed .sidebar__session,
+.sidebar--collapsed .sidebar__profile {
+justify-content: center;
+}
+
+.sidebar--collapsed .sidebar__top {
+flex-direction: column;
+}
+
+.sidebar--collapsed .sidebar__actions {
+align-items: center;
+}
+
+.sidebar--collapsed .sidebar__action {
+width: 42px;
+padding: 0;
+}
+
+.sidebar--collapsed .sidebar__session {
+padding: 0;
+}
+
+.sidebar--collapsed .sidebar__profile {
+padding: 7px 0;
+}
+
+@media (max-width: 640px) {
+.sidebar {
+width: 220px;
+min-width: 220px;
+}
+
+.sidebar--collapsed {
+width: 60px;
+min-width: 60px;
+}
+}
