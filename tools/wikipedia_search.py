@@ -2,24 +2,37 @@ import json
 from urllib.parse import quote
 
 import requests
-import wikipedia
 
 from tools.base import BaseTool
 
 
 class WikipediaSearchTool(BaseTool):
-    """Search Wikipedia and retrieve an article summary."""
+    """Search Wikipedia and retrieve article summaries using its API."""
 
     name = "wikipedia_search"
     description = (
-        "Searches Wikipedia and retrieves a short article summary. "
+        "Searches Wikipedia and retrieves an article summary. "
         'Input JSON: {"query": "Alan Turing", '
         '"language": "en", "results": 3}. '
         "Language is optional and defaults to en. Results must be 1 to 5."
     )
 
+    API_URL = "https://{language}.wikipedia.org/w/api.php"
+
+    def __init__(self, timeout: int = 15) -> None:
+        self.timeout = timeout
+        self.session = requests.Session()
+        self.session.headers.update(
+            {
+                "User-Agent": (
+                    "ReAct-Agent/0.1 "
+                    "(educational Wikipedia research tool)"
+                ),
+                "Accept": "application/json",
+            }
+        )
+
     def execute(self, tool_input: str) -> str:
-        # Only catch JSON errors around JSON parsing.
         try:
             data = json.loads(tool_input)
         except json.JSONDecodeError as error:
@@ -49,61 +62,80 @@ class WikipediaSearchTool(BaseTool):
         ):
             return "Error: 'results' must be an integer from 1 to 5."
 
+        language = language.strip().lower()
+        query = query.strip()
+        api_url = self.API_URL.format(language=language)
+
         try:
-            wikipedia.set_lang(language.strip().lower())
-
-            titles = wikipedia.search(
-                query.strip(),
-                results=result_limit,
+            search_response = self.session.get(
+                api_url,
+                params={
+                    "action": "query",
+                    "list": "search",
+                    "srsearch": query,
+                    "srlimit": result_limit,
+                    "format": "json",
+                    "formatversion": 2,
+                },
+                timeout=self.timeout,
             )
+            search_response.raise_for_status()
+            search_data = search_response.json()
 
-            if not titles:
-                return f"No Wikipedia articles found for '{query.strip()}'."
+            results = search_data.get("query", {}).get("search", [])
 
-            selected_title = titles[0]
+            if not results:
+                return f"No Wikipedia articles found for '{query}'."
 
-            try:
-                summary = wikipedia.summary(
-                    selected_title,
-                    sentences=3,
-                    auto_suggest=False,
-                )
-            except wikipedia.exceptions.DisambiguationError as error:
-                options = "\n".join(
-                    f"- {option}" for option in error.options[:5]
-                )
-                return (
-                    f"'{selected_title}' is ambiguous. "
-                    f"Choose a more specific article:\n{options}"
-                )
-            except wikipedia.exceptions.PageError:
-                return (
-                    f"Error: Wikipedia article '{selected_title}' "
-                    "could not be found."
-                )
+            # Use the exact page ID returned by the search API.
+            selected = results[0]
+            page_id = selected["pageid"]
+            title = selected["title"]
+
+            summary_response = self.session.get(
+                api_url,
+                params={
+                    "action": "query",
+                    "prop": "extracts",
+                    "exintro": 1,
+                    "explaintext": 1,
+                    "exchars": 1200,
+                    "pageids": page_id,
+                    "format": "json",
+                    "formatversion": 2,
+                },
+                timeout=self.timeout,
+            )
+            summary_response.raise_for_status()
+            summary_data = summary_response.json()
+
+            pages = summary_data.get("query", {}).get("pages", [])
+            if not pages or "missing" in pages[0]:
+                return f"Error: Wikipedia article '{title}' could not be found."
+
+            summary = pages[0].get("extract", "").strip()
+            if not summary:
+                summary = "No introductory summary is available."
 
             article_url = (
-                "https://"
-                + language.strip().lower()
-                + ".wikipedia.org/wiki/"
-                + quote(selected_title.replace(" ", "_"), safe="()")
+                f"https://{language}.wikipedia.org/wiki/"
+                f"{quote(title.replace(' ', '_'), safe='()')}"
             )
 
             output = [
-                f"Article: {selected_title}",
+                f"Article: {title}",
                 f"Summary: {summary}",
                 f"Source: {article_url}",
             ]
 
-            if len(titles) > 1:
+            if len(results) > 1:
                 output.append(
-                    "Other search results: " + "; ".join(titles[1:])
+                    "Other search results: "
+                    + "; ".join(item["title"] for item in results[1:])
                 )
 
             return "\n".join(output)
 
-        except wikipedia.exceptions.HTTPTimeoutError:
-            return "Error: Wikipedia request timed out."
         except requests.exceptions.JSONDecodeError as error:
             status = (
                 error.response.status_code
@@ -111,15 +143,28 @@ class WikipediaSearchTool(BaseTool):
                 else "unknown"
             )
             return (
-                "Error: Wikipedia returned an invalid JSON response. "
-                f"HTTP status: {status}. "
+                "Error: Wikipedia returned invalid JSON. "
+                f"HTTP status: {status}. Details: {error!r}"
+            )
+        except requests.exceptions.Timeout:
+            return "Error: Wikipedia request timed out."
+        except requests.exceptions.HTTPError as error:
+            status = (
+                error.response.status_code
+                if error.response is not None
+                else "unknown"
+            )
+            return (
+                f"Error: Wikipedia returned HTTP {status}. "
                 f"Details: {error!r}"
             )
         except requests.exceptions.RequestException as error:
             return (
-                f"Error: could not connect to Wikipedia.\n"
-                f"Exception type: {type(error).__name__}\n"
+                "Error: could not connect to Wikipedia. "
                 f"Details: {error!r}"
             )
-        except wikipedia.exceptions.WikipediaException as error:
-            return f"Error: Wikipedia request failed: {error}"
+        except (KeyError, IndexError, TypeError) as error:
+            return (
+                "Error: Wikipedia returned an unexpected response structure. "
+                f"Details: {error!r}"
+            )
