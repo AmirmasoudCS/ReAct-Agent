@@ -1,6 +1,13 @@
-from prompts.system_prompt import build_system_prompt
 from llm.client import LLMClient
+from prompts.system_prompt import build_system_prompt
 from tools.registry import ToolRegistry
+from utils.console import (
+    print_action,
+    print_debug,
+    print_error,
+    print_observation,
+    print_thought,
+)
 from utils.message import Message
 from utils.react_parser import parse_response
 
@@ -32,38 +39,44 @@ class ReActAgent:
             self.tools.get_descriptions()
         )
 
-        self.messages.append(Message("user", user_input.strip()))
-        messages = self.messages
+        self.messages.append(
+            Message("user", user_input.strip())
+        )
 
         format_retries = 0
 
         for _ in range(self.max_steps):
             response = self.llm.generate_response(
                 system_prompt,
-                messages,
+                self.messages,
             )
-            print(f"\n[DEBUG] Raw LLM response:\n{response}\n")
 
-            # Keep the model's response in the conversation history.
-            messages.append(Message("assistant", response))
+            print_debug(response)
+
+            self.messages.append(
+                Message("assistant", response)
+            )
 
             try:
                 parsed = parse_response(response)
-            except ValueError:
+            except ValueError as error:
+                print_error(str(error))
+
                 if format_retries >= 1:
                     return (
-                        "Error: the model repeatedly returned an invalid response. "
-                        "Try simplifying the request or adjusting the system prompt."
+                        "Error: the model repeatedly returned an "
+                        "invalid response. Try adjusting the prompt."
                     )
 
                 format_retries += 1
 
-                messages.append(
+                self.messages.append(
                     Message(
                         "user",
                         "Your response format was invalid. "
-                        "Answer with 'Final Answer: ...' or use the required "
-                        "Action format. Do not explain the instructions.",
+                        "Answer with 'Final Answer: ...' or use "
+                        "the required Action format. "
+                        "Do not explain the instructions.",
                     )
                 )
                 continue
@@ -71,13 +84,20 @@ class ReActAgent:
             if parsed.kind == "final":
                 return parsed.content
 
-            # Check that the requested tool actually exists.
-            tool = self.tools.get(parsed.tool_name)
+            # The parser guarantees these fields for an action.
+            assert parsed.tool_name is not None
+            assert parsed.tool_input is not None
 
-            if tool is None:
+            print_thought(parsed.thought or "")
+            print_action(
+                parsed.tool_name,
+                parsed.tool_input,
+            )
+
+            if self.tools.get(parsed.tool_name) is None:
                 observation = (
-                    f"Error: tool '{parsed.tool_name}' does not exist. "
-                    "Choose a tool from the available tools."
+                    f"Error: tool '{parsed.tool_name}' does not "
+                    "exist. Choose a tool from the available tools."
                 )
             else:
                 observation = self.tools.execute(
@@ -85,9 +105,13 @@ class ReActAgent:
                     parsed.tool_input,
                 )
 
-            messages.append(
+            print_observation(observation)
+
+            self.messages.append(
                 Message("user", f"Observation: {observation}")
             )
+
+        print_error("The agent reached its maximum number of steps.")
 
         return (
             "Error: the agent reached its maximum number of steps "
