@@ -1,3 +1,4 @@
+
 from pathlib import Path
 
 import yaml
@@ -11,14 +12,31 @@ DEFAULTS = {
         "top_p": 0.9,
         "stop": ["PAUSE", "Observation:"],
     },
-    "agent": {"max_steps": 5},
-    "tools": {"timeout": 15},
+    "agent": {
+        "max_steps": 5,
+    },
+    "tools": {
+        "timeout": 15,
+    },
+    "context": {
+        "context_window_tokens": 8192,
+        "max_output_tokens": 1024,
+        "safety_margin_tokens": 256,
+        "summary_trigger_ratio": 0.8,
+        "recent_turns": 2,
+        "summary_chunk_tokens": 1500,
+        "summary_max_tokens": 800,
+        "summary_output_tokens": 800,
+    },
 }
 
 
 def load_config(path: Path = CONFIG_PATH) -> dict:
     """Load config.yaml, filling in defaults for missing values."""
-    config = {section: dict(values) for section, values in DEFAULTS.items()}
+    config = {
+        section: dict(values)
+        for section, values in DEFAULTS.items()
+    }
 
     if path.exists():
         with open(path, encoding="utf-8") as file:
