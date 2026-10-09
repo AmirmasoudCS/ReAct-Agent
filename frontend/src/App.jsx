@@ -1,122 +1,92 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { Bot, Sparkles } from "lucide-react";
+import Sidebar from "./components/Sidebar";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const initialSessions = [
+{ id: "session-1", name: "Understanding ReAct agents" },
+{ id: "session-2", name: "Python tool implementation" },
+{ id: "session-3", name: "How context management works" },
+];
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+export default function App() {
+const [sessions, setSessions] = useState(initialSessions);
+const [activeSessionId, setActiveSessionId] = useState(null);
+const [collapsed, setCollapsed] = useState(false);
 
-      <div className="ticks"></div>
+function handleNewChat() {
+const newSession = {
+id: `session-${Date.now()}`,
+name: "New chat",
+};
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+```
+setSessions((currentSessions) => [newSession, ...currentSessions]);
+setActiveSessionId(newSession.id);
+```
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
 }
 
-export default App
+function handleSelectSession(sessionId) {
+setActiveSessionId(sessionId);
+}
+
+const activeSession = sessions.find(
+(session) => session.id === activeSessionId,
+);
+
+return ( <div className="app-layout">
+<Sidebar
+sessions={sessions}
+activeSessionId={activeSessionId}
+onNewChat={handleNewChat}
+onSelectSession={handleSelectSession}
+collapsed={collapsed}
+onToggleCollapse={() => setCollapsed((current) => !current)}
+/>
+
+  <main className="chat-main">
+    <header className="chat-header">
+      <div className="chat-header__title">
+        <Bot size={19} />
+        <span>ReAct Agent</span>
+      </div>
+      <span className="connection-status">
+        <span className="connection-status__dot" />
+        Local interface
+      </span>
+    </header>
+
+    <section className="chat-welcome">
+      <div className="chat-welcome__icon">
+        <Sparkles size={26} />
+      </div>
+
+      <h1>
+        {activeSession ? activeSession.name : "Where should we start?"}
+      </h1>
+
+      <p>
+        Your personal AI agent, ready to reason, use tools, and find answers.
+      </p>
+
+      <div className="chat-suggestions">
+        <button onClick={handleNewChat}>
+          <span>＋</span>
+          Start a new conversation
+        </button>
+        <button onClick={() => setCollapsed((current) => !current)}>
+          <span>☰</span>
+          Customize your workspace
+        </button>
+      </div>
+    </section>
+
+    <footer className="chat-footer">
+      <p>The chat interface is under construction.</p>
+    </footer>
+  </main>
+</div>
+
+);
+}
