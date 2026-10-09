@@ -1,0 +1,14 @@
+llm:
+  model: gemma3gemma4:e4b
+  temperature: 0.2
+  top_p: 0.9
+  num_ctx: 8192
+  stop:
+    - "PAUSE"
+    - "Observation:"
+
+agent:
+  max_steps: 6
+
+tools:
+  timeout: 15
