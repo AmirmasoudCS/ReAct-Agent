@@ -18,7 +18,7 @@ def parse_response(response: str) -> ParsedResponse:
     if not response or not response.strip():
         raise ValueError("The model returned an empty response.")
 
-    # Remove unexpected channel markers, including variants with whitespace.
+    # Remove unexpected channel markers.
     response = re.sub(
         r"<\s*channel\s*\|\s*>",
         "",
@@ -44,19 +44,22 @@ def parse_response(response: str) -> ParsedResponse:
             if not answer:
                 raise ValueError("The final answer cannot be empty.")
 
-            return ParsedResponse(kind="final", content=answer)
+            return ParsedResponse(
+                kind="final",
+                content=answer,
+            )
 
-    # Extract the model's thought, if present.
+    # Extract the thought.
     thought = None
 
     for line in lines:
         match = re.match(r"^\s*Thought\s*:\s*(.*)$", line)
+
         if match:
             thought = match.group(1).strip()
             break
 
-    # Parse an action. The first colon after the tool name separates
-    # the tool name from its input.
+    # Parse a tool action.
     for line in lines:
         match = re.match(r"^\s*Action\s*:\s*(.*)$", line)
 
