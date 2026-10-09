@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Literal
+import re
 
 
 @dataclass
@@ -16,6 +17,8 @@ def parse_response(response: str) -> ParsedResponse:
 
     if not response or not response.strip():
         raise ValueError("The model returned an empty response.")
+
+    response = re.sub(r"<channel\|>+", "", response)
 
     lines = response.strip().splitlines()
 
