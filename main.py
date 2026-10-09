@@ -5,15 +5,30 @@ from tools.wikipedia_search import WikipediaSearchTool
 from tools.registry import ToolRegistry
 from utils.console import console, print_agent, print_error
 from rich.text import Text
+from utils.config import load_config
 
 
 def main() -> None:
+    config = load_config()
+
     tools = ToolRegistry()
     tools.register(CalculatorTool())
-    tools.register(WikipediaSearchTool())
+    tools.register(
+        WikipediaSearchTool(timeout=config["tools"]["timeout"])
+    )
 
-    llm = LLMClient()
-    agent = ReActAgent(llm=llm, tools=tools)
+    llm_config = config["llm"]
+    llm = LLMClient(
+        model=llm_config["model"],
+        temperature=llm_config["temperature"],
+        top_p=llm_config["top_p"],
+        stop=llm_config["stop"],
+    )
+    agent = ReActAgent(
+        llm=llm,
+        tools=tools,
+        max_steps=config["agent"]["max_steps"],
+    )
 
     console.print(
         Text(
