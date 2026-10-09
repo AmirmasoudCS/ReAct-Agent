@@ -84,8 +84,10 @@ def test_reports_unknown_tool_to_model(registry):
 def test_retries_after_unparseable_response(registry):
     llm = FakeLLM(
         [
-            "I will work on that now.",
+            "Thought: I need a tool, but the action is malformed.\n"
+            "Action: wikipedia_search\nPAUSE",
             "Final Answer: Done.",
+
         ]
     )
     agent = ReActAgent(llm, registry)
