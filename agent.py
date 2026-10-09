@@ -33,6 +33,8 @@ class ReActAgent:
 
         messages = [Message("user", user_input.strip())]
 
+        format_retries = 0
+
         for _ in range(self.max_steps):
             response = self.llm.generate_response(
                 system_prompt,
@@ -46,13 +48,20 @@ class ReActAgent:
             try:
                 parsed = parse_response(response)
             except ValueError:
+                if format_retries >= 1:
+                    return (
+                        "Error: the model repeatedly returned an invalid response. "
+                        "Try simplifying the request or adjusting the system prompt."
+                    )
+
+                format_retries += 1
+
                 messages.append(
                     Message(
                         "user",
-                        "Your last response could not be parsed. "
-                        "If you are finished, use 'Final Answer: ...'. "
-                        "Otherwise, use 'Thought: ...', "
-                        "'Action: tool_name: tool_input', and 'PAUSE'.",
+                        "Your response format was invalid. "
+                        "Answer with 'Final Answer: ...' or use the required "
+                        "Action format. Do not explain the instructions.",
                     )
                 )
                 continue
