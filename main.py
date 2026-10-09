@@ -1,6 +1,7 @@
 from agent import ReActAgent
 from llm.client import LLMClient
 from tools.calculator import CalculatorTool
+from tools.wikipedia_search import WikipediaSearchTool
 from tools.registry import ToolRegistry
 from utils.console import console, print_agent, print_error
 from rich.text import Text
@@ -9,6 +10,7 @@ from rich.text import Text
 def main() -> None:
     tools = ToolRegistry()
     tools.register(CalculatorTool())
+    tools.register(WikipediaSearchTool())
 
     llm = LLMClient()
     agent = ReActAgent(llm=llm, tools=tools)
