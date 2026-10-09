@@ -1,4 +1,3 @@
-
 import os
 
 from dotenv import load_dotenv
@@ -17,10 +16,16 @@ class LLMClient:
         self,
         model: str | None = None,
         client: OpenAI | None = None,
+        temperature: float = 0.2,
+        top_p: float = 0.9,
+        stop: list[str] | None = None,
     ) -> None:
         self.model = model or os.getenv(
             "OLLAMA_MODEL", "gemma4:e4b"
         )
+        self.temperature = temperature
+        self.top_p = top_p
+        self.stop = stop
 
         self.client = client or OpenAI(
             base_url=os.getenv(
@@ -46,10 +51,17 @@ class LLMClient:
             for message in messages
         )
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=conversation,
-        )
+        request = {
+            "model": self.model,
+            "messages": conversation,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+        }
+
+        if self.stop:
+            request["stop"] = self.stop
+
+        response = self.client.chat.completions.create(**request)
 
         content = response.choices[0].message.content
 
