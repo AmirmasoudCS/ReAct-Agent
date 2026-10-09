@@ -104,6 +104,17 @@ class WikipediaSearchTool(BaseTool):
 
         except wikipedia.exceptions.HTTPTimeoutError:
             return "Error: Wikipedia request timed out."
+        except requests.exceptions.JSONDecodeError as error:
+            status = (
+                error.response.status_code
+                if error.response is not None
+                else "unknown"
+            )
+            return (
+                "Error: Wikipedia returned an invalid JSON response. "
+                f"HTTP status: {status}. "
+                f"Details: {error!r}"
+            )
         except requests.exceptions.RequestException as error:
             return (
                 f"Error: could not connect to Wikipedia.\n"
