@@ -57,6 +57,18 @@ def parse_response(response: str) -> ParsedResponse:
         if action_match:
             has_react_marker = True
             action = action_match.group(1).strip()
+            # Recover when the model mistakenly prefixes its final answer with Action.
+            if action.lower().startswith("final answer:"):
+                answer = action[len("final answer:"):].strip()
+
+                if not answer:
+                    raise ValueError("The final answer cannot be empty.")
+
+                return ParsedResponse(
+                    kind="final",
+                    content=answer,
+                    thought=thought,
+                )
             tool_name, separator, tool_input = action.partition(":")
             tool_name = tool_name.strip()
             tool_input = tool_input.strip()
