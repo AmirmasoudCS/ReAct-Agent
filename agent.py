@@ -81,7 +81,7 @@ class ReActAgent:
 
                 self.messages.append(
                     Message(
-                        "user",
+                        "agent_instruction",
                         "Your response format was invalid. "
                         "Answer with 'Final Answer: ...' or use "
                         "the required Action format. "
@@ -116,7 +116,7 @@ class ReActAgent:
             print_observation(observation)
 
             self.messages.append(
-                Message("user", f"Observation: {observation}")
+                Message("observation", f"Observation: {observation}")
             )
 
         print_error("The agent reached its maximum number of steps.")
