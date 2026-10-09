@@ -18,15 +18,15 @@ def parse_response(response: str) -> ParsedResponse:
     if not response or not response.strip():
         raise ValueError("The model returned an empty response.")
 
-    # Remove unexpected channel markers.
+    # Remove unexpected channel markers before parsing.
     response = re.sub(
         r"<\s*channel\s*\|\s*>",
         "",
         response,
         flags=re.IGNORECASE,
-    ).strip()
+    )
 
-    lines = response.splitlines()
+    lines = response.strip().splitlines()
 
     # Parse an explicit final answer.
     for index, line in enumerate(lines):
