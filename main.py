@@ -12,6 +12,7 @@ from tools.weather import WeatherTool
 from tools.registry import ToolRegistry
 from utils.console import console, print_agent, print_error
 from utils.config import load_config
+from utils.context_manager import ContextManager
 from utils.message import Message
 from utils.session_manager import SessionManager
 
@@ -45,9 +46,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def choose_session(
-    session_manager: SessionManager,
-) -> dict:
+def choose_session(session_manager: SessionManager) -> dict:
     """Display saved sessions and let the user select one."""
     sessions = session_manager.list_sessions()
 
@@ -107,6 +106,7 @@ def main() -> None:
 
         config = load_config()
 
+        # Register tools.
         tools = ToolRegistry()
         tools.register(CalculatorTool())
         tools.register(
@@ -119,27 +119,41 @@ def main() -> None:
             WeatherTool(timeout=config["tools"]["timeout"])
         )
 
+        # Initialize the LLM client.
         llm_config = config["llm"]
+        context_config = config["context"]
+
         llm = LLMClient(
             model=llm_config["model"],
             temperature=llm_config["temperature"],
             top_p=llm_config["top_p"],
             stop=llm_config["stop"],
+            max_output_tokens=context_config["max_output_tokens"],
         )
+
+        session_name = session["session_name"]
 
         messages = [
             Message(item["role"], item["content"])
             for item in session["messages"]
         ]
 
+        # Initialize persistent context management for this session.
+        context_manager = ContextManager(
+            session_manager=session_manager,
+            session_name=session_name,
+            llm=llm,
+            context_config=context_config,
+        )
+
+        # Initialize the agent with the context manager.
         agent = ReActAgent(
             llm=llm,
             tools=tools,
             max_steps=config["agent"]["max_steps"],
             messages=messages,
+            context_manager=context_manager,
         )
-
-        session_name = session["session_name"]
 
         console.print(
             Text(
@@ -165,6 +179,7 @@ def main() -> None:
                 answer = agent.run(user_input)
                 print_agent(answer)
 
+                # Save the complete transcript, not the compacted context.
                 session_manager.save_session(
                     session_name,
                     agent.get_messages(),
