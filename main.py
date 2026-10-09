@@ -61,6 +61,7 @@ def parse_args() -> argparse.Namespace:
         help="Load a session by its name or ID.",
     )
     session_group.add_argument(
+        "-rs",
         "--rename-session",
         nargs=2,
         metavar=("CURRENT_NAME", "NEW_NAME"),
