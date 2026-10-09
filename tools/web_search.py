@@ -67,7 +67,10 @@ class WebSearchTool(BaseTool):
         ):
             return "Error: 'region' must be a non-empty region code."
 
-        if timelimit is not None and timelimit not in VALID_TIME_LIMITS:
+        if timelimit is not None and (
+            not isinstance(timelimit, str)
+            or timelimit not in VALID_TIME_LIMITS
+        ):
             return (
                 "Error: 'timelimit' must be d, w, m, or y, "
                 "or omitted."
