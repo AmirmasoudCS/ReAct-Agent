@@ -66,7 +66,15 @@ def parse_args() -> argparse.Namespace:
         metavar=("CURRENT_NAME", "NEW_NAME"),
         help="Rename a saved session without opening it.",
     )
-
+    session_group.add_argument(
+        "-r",
+        "--remove",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="SESSION",
+        help="Remove a session by name, or select one interactively.",
+    )
     return parser.parse_args()
 
 
