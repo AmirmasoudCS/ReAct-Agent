@@ -20,6 +20,7 @@ class ReActAgent:
         self.llm = llm
         self.tools = tools
         self.max_steps = max_steps
+        self.messages: list[Message] = []
 
     def run(self, user_input: str) -> str:
         """Process a user request and return the final answer."""
@@ -31,7 +32,8 @@ class ReActAgent:
             self.tools.get_descriptions()
         )
 
-        messages = [Message("user", user_input.strip())]
+        self.messages.append(Message("user", user_input.strip()))
+        messages = self.messages
 
         format_retries = 0
 
