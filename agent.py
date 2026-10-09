@@ -38,6 +38,7 @@ class ReActAgent:
                 system_prompt,
                 messages,
             )
+            print(f"\n[DEBUG] Raw LLM response:\n{response}\n")
 
             # Keep the model's response in the conversation history.
             messages.append(Message("assistant", response))
