@@ -2,8 +2,13 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
+_CHANNEL_RE = re.compile(r"<\s*channel\s*\|\s*>", re.IGNORECASE)
+_FINAL_RE = re.compile(r"^\s*Final Answer\s*:\s*(.*)$", re.IGNORECASE)
+_THOUGHT_RE = re.compile(r"^\s*Thought\s*:\s*(.*)$", re.IGNORECASE)
+_ACTION_RE = re.compile(r"^\s*Action\s*:\s*(.*)$", re.IGNORECASE)
 
-@dataclass
+
+@dataclass(frozen=True)
 class ParsedResponse:
     kind: Literal["action", "final"]
     content: str
@@ -13,74 +18,48 @@ class ParsedResponse:
 
 
 def parse_response(response: str) -> ParsedResponse:
-    """Parse a ReAct response into an action or a final answer."""
+    """Parse a ReAct response into an action or a final answer.
 
+    Whichever of `Action:` / `Final Answer:` appears first wins.
+    """
     if not response or not response.strip():
         raise ValueError("The model returned an empty response.")
 
-    # Remove unexpected channel markers before parsing.
-    response = re.sub(
-        r"<\s*channel\s*\|\s*>",
-        "",
-        response,
-        flags=re.IGNORECASE,
-    )
-
+    # Newline (not "") so markers glued to text don't merge lines.
+    response = _CHANNEL_RE.sub("\n", response)
     lines = response.strip().splitlines()
 
-    # Parse an explicit final answer.
-    for index, line in enumerate(lines):
-        match = re.match(r"^\s*Final Answer\s*:\s*(.*)$", line)
-
-        if match:
-            answer_parts = [match.group(1).strip()]
-            answer_parts.extend(
-                item.strip()
-                for item in lines[index + 1:]
-                if item.strip()
-            )
-            answer = "\n".join(part for part in answer_parts if part)
-
-            if not answer:
-                raise ValueError("The final answer cannot be empty.")
-
-            return ParsedResponse(
-                kind="final",
-                content=answer,
-            )
-
-    # Extract the thought.
     thought = None
 
-    for line in lines:
-        match = re.match(r"^\s*Thought\s*:\s*(.*)$", line)
-
-        if match:
-            thought = match.group(1).strip()
-            break
-
-    # Parse a tool action.
-    for line in lines:
-        match = re.match(r"^\s*Action\s*:\s*(.*)$", line)
-
-        if not match:
+    for index, line in enumerate(lines):
+        if thought is None and (m := _THOUGHT_RE.match(line)):
+            thought = m.group(1).strip()
             continue
 
-        action = match.group(1).strip()
-        tool_name, separator, tool_input = action.partition(":")
-        tool_name = tool_name.strip()
-        tool_input = tool_input.strip()
+        if m := _FINAL_RE.match(line):
+            answer = "\n".join([m.group(1), *lines[index + 1:]]).strip()
+            if not answer:
+                raise ValueError("The final answer cannot be empty.")
+            return ParsedResponse(kind="final", content=answer, thought=thought)
 
-        if not separator or not tool_name or not tool_input:
-            raise ValueError("The action format is invalid.")
+        if m := _ACTION_RE.match(line):
+            action = m.group(1).strip()
+            tool_name, sep, tool_input = action.partition(":")
+            tool_name, tool_input = tool_name.strip(), tool_input.strip()
 
-        return ParsedResponse(
-            kind="action",
-            content=action,
-            tool_name=tool_name,
-            tool_input=tool_input,
-            thought=thought,
-        )
+            if not sep or not tool_name or not tool_input:
+                raise ValueError(
+                    "Invalid action format. Expected "
+                    "'Action: tool_name: tool_input'."
+                )
+
+            return ParsedResponse(
+                kind="action",
+                content=action,
+                tool_name=tool_name,
+                tool_input=tool_input,
+                thought=thought,
+            )
 
     raise ValueError(
         "No valid action or final answer found in the model response."
