@@ -1,6 +1,6 @@
+import re
 from dataclasses import dataclass
 from typing import Literal
-import re
 
 
 @dataclass
@@ -18,58 +18,67 @@ def parse_response(response: str) -> ParsedResponse:
     if not response or not response.strip():
         raise ValueError("The model returned an empty response.")
 
-    response = re.sub(r"<channel\|>+", "", response)
+    # Remove unexpected channel markers, including variants with whitespace.
+    response = re.sub(
+        r"<\s*channel\s*\|\s*>",
+        "",
+        response,
+        flags=re.IGNORECASE,
+    ).strip()
 
-    lines = response.strip().splitlines()
+    lines = response.splitlines()
 
+    # Parse an explicit final answer.
     for index, line in enumerate(lines):
-        if line.strip().startswith("Final Answer:"):
-            answer = line.strip().partition(":")[2].strip()
-            remaining_lines = [
+        match = re.match(r"^\s*Final Answer\s*:\s*(.*)$", line)
+
+        if match:
+            answer_parts = [match.group(1).strip()]
+            answer_parts.extend(
                 item.strip()
                 for item in lines[index + 1:]
                 if item.strip()
-            ]
-
-            if remaining_lines:
-                answer += "\n" + "\n".join(remaining_lines)
+            )
+            answer = "\n".join(part for part in answer_parts if part)
 
             if not answer:
                 raise ValueError("The final answer cannot be empty.")
 
-            return ParsedResponse(
-                kind="final",
-                content=answer,
-            )
+            return ParsedResponse(kind="final", content=answer)
 
+    # Extract the model's thought, if present.
     thought = None
 
     for line in lines:
-        if line.strip().startswith("Thought:"):
-            thought = line.strip().partition(":")[2].strip()
+        match = re.match(r"^\s*Thought\s*:\s*(.*)$", line)
+        if match:
+            thought = match.group(1).strip()
             break
 
+    # Parse an action. The first colon after the tool name separates
+    # the tool name from its input.
     for line in lines:
-        stripped_line = line.strip()
+        match = re.match(r"^\s*Action\s*:\s*(.*)$", line)
 
-        if stripped_line.startswith("Action:"):
-            action = stripped_line.partition(":")[2].strip()
-            tool_name, separator, tool_input = action.partition(":")
+        if not match:
+            continue
 
-            tool_name = tool_name.strip()
-            tool_input = tool_input.strip()
+        action = match.group(1).strip()
+        tool_name, separator, tool_input = action.partition(":")
+        tool_name = tool_name.strip()
+        tool_input = tool_input.strip()
 
-            if not separator or not tool_name or not tool_input:
-                raise ValueError("The action format is invalid.")
+        if not separator or not tool_name or not tool_input:
+            raise ValueError("The action format is invalid.")
 
-            return ParsedResponse(
-                kind="action",
-                content=action,
-                tool_name=tool_name,
-                tool_input=tool_input,
-                thought=thought,
-            )
+        return ParsedResponse(
+            kind="action",
+            content=action,
+            tool_name=tool_name,
+            tool_input=tool_input,
+            thought=thought,
+        )
 
     raise ValueError(
-        "The response must contain 'Final Answer:' or a valid 'Action:'."
+        "No valid action or final answer found in the model response."
     )
