@@ -27,13 +27,18 @@ class LLMClient:
         temperature: float = 0.2,
         top_p: float = 0.9,
         stop: list[str] | None = None,
+        max_output_tokens: int = 1024,
     ) -> None:
+        if max_output_tokens < 1:
+            raise ValueError("max_output_tokens must be positive.")
+
         self.model = model or os.getenv(
             "OLLAMA_MODEL", "gemma4:e4b"
         )
         self.temperature = temperature
         self.top_p = top_p
         self.stop = stop
+        self.max_output_tokens = max_output_tokens
 
         self.client = client or OpenAI(
             base_url=os.getenv(
@@ -47,8 +52,15 @@ class LLMClient:
         self,
         system_prompt: str,
         messages: list[Message],
+        max_tokens: int | None = None,
     ) -> str:
         """Send a prompt and conversation history to Ollama."""
+        output_limit = (
+            self.max_output_tokens if max_tokens is None else max_tokens
+        )
+
+        if output_limit < 1:
+            raise ValueError("max_tokens must be positive.")
 
         conversation = [
             {"role": "system", "content": system_prompt}
@@ -73,6 +85,7 @@ class LLMClient:
             "messages": conversation,
             "temperature": self.temperature,
             "top_p": self.top_p,
+            "max_tokens": output_limit,
         }
 
         if self.stop:
