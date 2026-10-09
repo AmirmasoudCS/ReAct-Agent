@@ -2,10 +2,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 
-@dataclass(frozen=True)
+@dataclass
 class ParsedResponse:
-    """A parsed response from the ReAct model."""
-
     kind: Literal["action", "final"]
     content: str
     tool_name: str | None = None
@@ -14,32 +12,33 @@ class ParsedResponse:
 
 
 def parse_response(response: str) -> ParsedResponse:
-    """Parse a model response into a tool action or final answer."""
+    """Parse a ReAct response into an action or a final answer."""
 
     if not response or not response.strip():
         raise ValueError("The model returned an empty response.")
 
     lines = response.strip().splitlines()
 
-    # Recognize an explicit final answer.
     for index, line in enumerate(lines):
         if line.strip().startswith("Final Answer:"):
-            first_line = line.strip().partition(":")[2].strip()
-            remaining_lines = lines[index + 1:]
+            answer = line.strip().partition(":")[2].strip()
+            remaining_lines = [
+                item.strip()
+                for item in lines[index + 1:]
+                if item.strip()
+            ]
 
-            answer = "\n".join(
-                [first_line, *remaining_lines]
-            ).strip()
+            if remaining_lines:
+                answer += "\n" + "\n".join(remaining_lines)
 
             if not answer:
-                raise ValueError("The final answer is empty.")
+                raise ValueError("The final answer cannot be empty.")
 
             return ParsedResponse(
                 kind="final",
                 content=answer,
             )
 
-    # Extract the model's thought, if present.
     thought = None
 
     for line in lines:
@@ -47,7 +46,6 @@ def parse_response(response: str) -> ParsedResponse:
             thought = line.strip().partition(":")[2].strip()
             break
 
-    # Recognize a tool action.
     for line in lines:
         stripped_line = line.strip()
 
@@ -59,23 +57,16 @@ def parse_response(response: str) -> ParsedResponse:
             tool_input = tool_input.strip()
 
             if not separator or not tool_name or not tool_input:
-                raise ValueError(
-                    "Invalid action format. Expected "
-                    "'Action: tool_name: tool_input'."
-                )
+                raise ValueError("The action format is invalid.")
 
             return ParsedResponse(
                 kind="action",
-                content=response.strip(),
+                content=action,
                 tool_name=tool_name,
                 tool_input=tool_input,
                 thought=thought,
             )
 
-    # No action or explicit final-answer prefix was found.
-    # Treat ordinary natural-language output as a final answer.
-    return ParsedResponse(
-        kind="final",
-        content=response.strip(),
+    raise ValueError(
+        "The response must contain 'Final Answer:' or a valid 'Action:'."
     )
-
