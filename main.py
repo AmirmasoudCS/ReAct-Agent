@@ -13,9 +13,7 @@ def main() -> None:
 
     tools = ToolRegistry()
     tools.register(CalculatorTool())
-    tools.register(
-        WikipediaSearchTool(timeout=config["tools"]["timeout"])
-    )
+    tools.register(WikipediaSearchTool(timeout=config["tools"]["timeout"]))
 
     llm_config = config["llm"]
     llm = LLMClient(
