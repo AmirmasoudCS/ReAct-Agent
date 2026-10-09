@@ -2,6 +2,7 @@ from agent import ReActAgent
 from llm.client import LLMClient
 from tools.calculator import CalculatorTool
 from tools.wikipedia_search import WikipediaSearchTool
+from tools.web_search import WebSearchTool
 from tools.registry import ToolRegistry
 from utils.console import console, print_agent, print_error
 from rich.text import Text
@@ -14,6 +15,8 @@ def main() -> None:
     tools = ToolRegistry()
     tools.register(CalculatorTool())
     tools.register(WikipediaSearchTool(timeout=config["tools"]["timeout"]))
+    tools.register(WebSearchTool(timeout=config["tools"]["timeout"]))
+
 
     llm_config = config["llm"]
     llm = LLMClient(
