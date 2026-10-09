@@ -104,7 +104,11 @@ class WikipediaSearchTool(BaseTool):
 
         except wikipedia.exceptions.HTTPTimeoutError:
             return "Error: Wikipedia request timed out."
-        except requests.exceptions.RequestException:
-            return "Error: could not connect to Wikipedia."
+        except requests.exceptions.RequestException as error:
+            return (
+                f"Error: could not connect to Wikipedia.\n"
+                f"Exception type: {type(error).__name__}\n"
+                f"Details: {error!r}"
+            )
         except wikipedia.exceptions.WikipediaException as error:
             return f"Error: Wikipedia request failed: {error}"
