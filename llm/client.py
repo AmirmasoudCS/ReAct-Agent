@@ -1,3 +1,4 @@
+
 import os
 
 from dotenv import load_dotenv
@@ -11,6 +12,13 @@ load_dotenv()
 
 class LLMClient:
     """Client for communicating with a local Ollama model."""
+
+    API_ROLES = {
+        "user": "user",
+        "assistant": "assistant",
+        "observation": "user",
+        "agent_instruction": "user",
+    }
 
     def __init__(
         self,
@@ -46,10 +54,19 @@ class LLMClient:
             {"role": "system", "content": system_prompt}
         ]
 
-        conversation.extend(
-            {"role": message.role, "content": message.content}
-            for message in messages
-        )
+        for message in messages:
+            api_role = self.API_ROLES.get(message.role)
+
+            if api_role is None:
+                raise ValueError(
+                    f"Unsupported internal message role: "
+                    f"'{message.role}'."
+                )
+
+            conversation.append({
+                "role": api_role,
+                "content": message.content,
+            })
 
         request = {
             "model": self.model,
