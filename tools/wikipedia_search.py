@@ -9,6 +9,11 @@ UNEXPECTED_STRUCTURE_ERROR = (
     "Error: Wikipedia returned an unexpected response structure."
 )
 
+DETAIL_LIMITS = {
+    "intro": 1200,
+    "full": 4000,
+}
+
 
 def _get_query_list(data, key: str) -> list | None:
     """Return data["query"][key] if it is a list, otherwise None."""
@@ -31,10 +36,14 @@ class WikipediaSearchTool(BaseTool):
 
     name = "wikipedia_search"
     description = (
-        "Searches Wikipedia and retrieves an article summary. "
-        'Input JSON: {"query": "Alan Turing", '
-        '"language": "en", "results": 3}. '
-        "Language is optional and defaults to en. Results must be 1 to 5."
+        "Searches Wikipedia and retrieves article text. "
+        'Input JSON: {"query": "Alan Turing", "language": "en", '
+        '"results": 3, "detail": "intro"}. '
+        "Language is optional and defaults to en. Results must be 1 to 5. "
+        'Detail is optional: "intro" (default) returns only the article '
+        'introduction; "full" returns more of the article, including '
+        "sections such as early life, birthplace and career. Use "
+        '"full" when the introduction does not contain the fact you need.'
     )
 
     API_URL = "https://{language}.wikipedia.org/w/api.php"
@@ -64,6 +73,7 @@ class WikipediaSearchTool(BaseTool):
         query = data.get("query")
         language = data.get("language", "en")
         result_limit = data.get("results", 3)
+        detail = data.get("detail", "intro")
 
         if not isinstance(query, str) or not query.strip():
             return "Error: 'query' must be a non-empty string."
@@ -81,6 +91,9 @@ class WikipediaSearchTool(BaseTool):
             or not 1 <= result_limit <= 5
         ):
             return "Error: 'results' must be an integer from 1 to 5."
+
+        if not isinstance(detail, str) or detail not in DETAIL_LIMITS:
+            return "Error: 'detail' must be \"intro\" or \"full\"."
 
         language = language.strip().lower()
         query = query.strip()
@@ -118,18 +131,23 @@ class WikipediaSearchTool(BaseTool):
             page_id = selected["pageid"]
             title = selected["title"]
 
+            summary_params = {
+                "action": "query",
+                "prop": "extracts",
+                "explaintext": 1,
+                "exchars": DETAIL_LIMITS[detail],
+                "pageids": page_id,
+                "format": "json",
+                "formatversion": 2,
+            }
+
+            # Without exintro, the extract continues past the introduction.
+            if detail == "intro":
+                summary_params["exintro"] = 1
+
             summary_response = self.session.get(
                 api_url,
-                params={
-                    "action": "query",
-                    "prop": "extracts",
-                    "exintro": 1,
-                    "explaintext": 1,
-                    "exchars": 1200,
-                    "pageids": page_id,
-                    "format": "json",
-                    "formatversion": 2,
-                },
+                params=summary_params,
                 timeout=self.timeout,
             )
             summary_response.raise_for_status()
