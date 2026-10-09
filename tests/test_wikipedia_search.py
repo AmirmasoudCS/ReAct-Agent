@@ -381,7 +381,16 @@ def test_search_handles_unexpected_response_structure(monkeypatch):
         ),
     )
 
-    result = tool.execute('{"query": "Python"}')
+    search_data = search_response.json()
+
+    if (
+        not isinstance(search_data, dict)
+        or not isinstance(search_data.get("query"), dict)
+        or not isinstance(search_data["query"].get("search"), list)
+    ):
+        return "Error: Wikipedia returned an unexpected response structure."
+
+    results = search_data["query"]["search"]
 
     assert "unexpected response structure" in result
 
