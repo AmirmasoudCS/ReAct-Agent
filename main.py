@@ -67,7 +67,7 @@ def parse_args() -> argparse.Namespace:
         help="Rename a saved session without opening it.",
     )
     session_group.add_argument(
-        "-r",
+        "-rm",
         "--remove",
         nargs="?",
         const="",
