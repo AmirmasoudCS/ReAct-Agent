@@ -117,6 +117,64 @@ def choose_session(session_manager: SessionManager) -> dict:
 
         console.print("[red]Selection is out of range.[/red]")
 
+def choose_session_to_remove(
+    session_manager: SessionManager,
+    identifier: str | None = None,
+) -> dict:
+    """Select a session for removal by number, name, or stable ID."""
+    sessions = session_manager.list_sessions()
+
+    if not sessions:
+        raise ValueError("No saved sessions are available to remove.")
+
+    console.print("\n[bold]Saved sessions:[/bold]")
+
+    for index, session in enumerate(sessions, start=1):
+        console.print(
+            f"  [cyan]{index}.[/cyan] "
+            f"{session['session_name']} "
+            f"[dim](updated: {session['updated_at']}, "
+            f"messages: {session['message_count']})[/dim]"
+        )
+
+    if identifier is None or not identifier.strip():
+        identifier = console.input(
+            "\n[bold #60A5FA]Enter the session number or name "
+            "(or 'q' to cancel): [/bold #60A5FA]"
+        ).strip()
+
+    if identifier.lower() == "q":
+        raise SystemExit(0)
+
+    # Treat a valid list index as a selection number.
+    if identifier.isdigit():
+        index = int(identifier)
+        if 1 <= index <= len(sessions):
+            return sessions[index - 1]
+
+    # Otherwise, match by display name or stable session ID.
+    matches = [
+        session
+        for session in sessions
+        if identifier.casefold() in {
+            session["session_name"].casefold(),
+            session["session_id"].casefold(),
+        }
+    ]
+
+    if len(matches) == 1:
+        return matches[0]
+
+    if len(matches) > 1:
+        raise ValueError(
+            f"'{identifier}' matches multiple sessions. "
+            "Please select one by its list number."
+        )
+
+    raise ValueError(
+        f"No session matches '{identifier}'. "
+        "Run --remove without a name to select from the list."
+    )
 
 def generate_session_title(
     llm: LLMClient,
