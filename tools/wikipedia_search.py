@@ -5,6 +5,26 @@ import requests
 
 from tools.base import BaseTool
 
+UNEXPECTED_STRUCTURE_ERROR = (
+    "Error: Wikipedia returned an unexpected response structure."
+)
+
+
+def _get_query_list(data, key: str) -> list | None:
+    """Return data["query"][key] if it is a list, otherwise None."""
+    if not isinstance(data, dict):
+        return None
+
+    query = data.get("query")
+    if not isinstance(query, dict):
+        return None
+
+    items = query.get(key)
+    if not isinstance(items, list):
+        return None
+
+    return items
+
 
 class WikipediaSearchTool(BaseTool):
     """Search Wikipedia and retrieve article summaries using its API."""
@@ -82,13 +102,19 @@ class WikipediaSearchTool(BaseTool):
             search_response.raise_for_status()
             search_data = search_response.json()
 
-            results = search_data.get("query", {}).get("search", [])
+            # Validate the structure before treating it as "no results".
+            results = _get_query_list(search_data, "search")
+            if results is None:
+                return UNEXPECTED_STRUCTURE_ERROR
 
             if not results:
                 return f"No Wikipedia articles found for '{query}'."
 
             # Use the exact page ID returned by the search API.
             selected = results[0]
+            if not isinstance(selected, dict):
+                return UNEXPECTED_STRUCTURE_ERROR
+
             page_id = selected["pageid"]
             title = selected["title"]
 
@@ -109,11 +135,22 @@ class WikipediaSearchTool(BaseTool):
             summary_response.raise_for_status()
             summary_data = summary_response.json()
 
-            pages = summary_data.get("query", {}).get("pages", [])
-            if not pages or "missing" in pages[0]:
+            pages = _get_query_list(summary_data, "pages")
+            if pages is None:
+                return UNEXPECTED_STRUCTURE_ERROR
+
+            if not pages:
                 return f"Error: Wikipedia article '{title}' could not be found."
 
-            summary = pages[0].get("extract", "").strip()
+            page = pages[0]
+            if not isinstance(page, dict):
+                return UNEXPECTED_STRUCTURE_ERROR
+
+            if "missing" in page:
+                return f"Error: Wikipedia article '{title}' could not be found."
+
+            # `or ""` also handles an explicit null extract.
+            summary = (page.get("extract") or "").strip()
             if not summary:
                 summary = "No introductory summary is available."
 
@@ -163,8 +200,8 @@ class WikipediaSearchTool(BaseTool):
                 "Error: could not connect to Wikipedia. "
                 f"Details: {error!r}"
             )
-        except (KeyError, IndexError, TypeError) as error:
+        except (KeyError, IndexError, TypeError, AttributeError) as error:
             return (
-                "Error: Wikipedia returned an unexpected response structure. "
+                f"{UNEXPECTED_STRUCTURE_ERROR[:-1]} "
                 f"Details: {error!r}"
             )
