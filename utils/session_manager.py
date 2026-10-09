@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+import shutil
 
 
 class SessionManager:
@@ -309,6 +310,30 @@ class SessionManager:
 
         return session
 
+    def remove_session(self, identifier: str) -> dict[str, Any]:
+        """Permanently remove a session and its saved files."""
+        session = self.load_session(identifier)
+        session_id = session["session_id"]
+        session_dir = self._session_dir(session_id)
+
+        if not (session_dir / self.CONVERSATION_FILENAME).is_file():
+            raise FileNotFoundError(
+                f"Session '{identifier}' was not found."
+            )
+
+        # Preserve the session metadata for the caller before deleting it.
+        removed_session = dict(session)
+
+        # Remove the transcript, summary, and any other files in the directory.
+        shutil.rmtree(session_dir)
+
+        # Also remove a legacy file if one remains from an earlier migration.
+        legacy_path = self._legacy_session_path(session_id)
+        if legacy_path.is_file():
+            legacy_path.unlink()
+
+        return removed_session
+
     def save_session(
         self,
         session_name: str,
@@ -456,3 +481,5 @@ class SessionManager:
         finally:
             if temporary_path.exists():
                 temporary_path.unlink()
+
+        
