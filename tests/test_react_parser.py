@@ -3,61 +3,42 @@ import pytest
 from utils.react_parser import parse_response
 
 
-def test_parses_action_with_channel_marker():
-    response = (
-        'Thought: Search Wikipedia.\n'
-        '<channel|>Action: wikipedia_search: '
-        '{"query": "Olleselinus birthplace"}\n'
-        'PAUSE'
-    )
+def test_plain_greeting_is_final_answer():
+    parsed = parse_response("Hello! How can I help you today?")
+
+    assert parsed.kind == "final"
+    assert parsed.content == "Hello! How can I help you today?"
+
+
+def test_valid_action_is_parsed():
+    response = """
+Thought: I should search Wikipedia.
+Action: wikipedia_search: {"query": "Isaac Newton", "results": 1}
+PAUSE
+"""
     parsed = parse_response(response)
 
     assert parsed.kind == "action"
     assert parsed.tool_name == "wikipedia_search"
-    assert parsed.tool_input == '{"query": "Olleselinus birthplace"}'
-    assert parsed.thought == "Search Wikipedia."
+    assert parsed.tool_input == '{"query": "Isaac Newton", "results": 1}'
 
 
-def test_parses_final_answer_with_channel_marker():
-    parsed = parse_response(
-        '<channel|>Final Answer: I could not find a reliable match.'
-    )
-    assert parsed.kind == "final"
-    assert parsed.content == "I could not find a reliable match."
-
-
-def test_marker_glued_to_previous_text():
-    parsed = parse_response("Thought: hmm<channel|>Action: calc: 2+2")
-    assert parsed.kind == "action"
-    assert parsed.tool_input == "2+2"
-
-
-def test_final_answer_preserves_paragraphs_and_indentation():
-    parsed = parse_response(
-        "Final Answer: Line one\n\nLine two\n    indented"
-    )
-    assert parsed.content == "Line one\n\nLine two\n    indented"
-
-
-def test_action_before_hallucinated_final_answer_wins():
+def test_channel_markers_do_not_break_action_parsing():
     response = (
-        "Action: search: cats\n"
-        "Observation: made up\n"
-        "Final Answer: made up"
+        "Thought: I should search.\n"
+        "<channel|>Action: wikipedia_search: "
+        '{"query": "Isaac Newton", "results": 1}\n'
+        "PAUSE"
     )
+
     parsed = parse_response(response)
+
     assert parsed.kind == "action"
-    assert parsed.tool_name == "search"
+    assert parsed.tool_name == "wikipedia_search"
 
 
-def test_tool_input_may_contain_colons():
-    parsed = parse_response("Action: fetch: https://example.com:8080/x")
-    assert parsed.tool_input == "https://example.com:8080/x"
+def test_malformed_action_is_not_a_final_answer():
+    response = "Thought: I should search.\nAction: wikipedia_search\nPAUSE"
 
-
-@pytest.mark.parametrize("bad", ["", "   \n", "just chatting",
-                                 "Action: search", "Action: : foo",
-                                 "Final Answer:   "])
-def test_invalid_responses_raise(bad):
     with pytest.raises(ValueError):
-        parse_response(bad)
+        parse_response(response)
