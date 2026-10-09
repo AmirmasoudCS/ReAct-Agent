@@ -247,6 +247,32 @@ def main() -> None:
             )
             return
 
+        if args.remove is not None:
+            selected_session = choose_session_to_remove(
+                session_manager,
+                args.remove,
+            )
+
+            session_name = selected_session["session_name"]
+            session_id = selected_session["session_id"]
+
+            confirmation = console.input(
+                f"\n[bold red]Permanently delete '{session_name}'? "
+                "This cannot be undone. (y/N): [/bold red]"
+            ).strip().lower()
+
+            if confirmation not in {"y", "yes"}:
+                console.print("[yellow]Removal cancelled.[/yellow]")
+                return
+
+            removed_session = session_manager.remove_session(session_id)
+
+            console.print(
+                "[green]Removed session:[/green] "
+                f"{removed_session['session_name']}"
+            )
+            return
+
         if args.new:
             session = session_manager.create_session()
             console.print(
