@@ -1,3 +1,4 @@
+
 llm:
   model: gemma4:e4b
   temperature: 0.2
@@ -11,3 +12,13 @@ agent:
 
 tools:
   timeout: 15
+
+context:
+  context_window_tokens: 8192
+  max_output_tokens: 1024
+  safety_margin_tokens: 256
+  summary_trigger_ratio: 0.8
+  recent_turns: 2
+  summary_chunk_tokens: 1500
+  summary_max_tokens: 800
+  summary_output_tokens: 800
