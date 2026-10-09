@@ -87,8 +87,9 @@ class SessionManager:
 
         return sessions
 
+    
     def load_session(self, session_name: str) -> dict[str, Any]:
-        """Load a session from disk."""
+        """Load a session from disk and migrate legacy message roles."""
         path = self._session_path(session_name)
 
         if not path.exists():
@@ -118,6 +119,23 @@ class SessionManager:
                 or not isinstance(message.get("content"), str)
             ):
                 raise ValueError("Session contains an invalid message.")
+
+        # Migrate messages written by older versions of the agent.
+        retry_instruction = (
+            "Your response format was invalid. "
+            "Answer with 'Final Answer: ...' or use "
+            "the required Action format. "
+            "Do not explain the instructions."
+        )
+
+        for message in messages:
+            if message["role"] != "user":
+                continue
+
+            if message["content"].startswith("Observation: "):
+                message["role"] = "observation"
+            elif message["content"] == retry_instruction:
+                message["role"] = "agent_instruction"
 
         session["session_name"] = path.stem
         return session
