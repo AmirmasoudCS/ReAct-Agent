@@ -21,11 +21,12 @@ def parse_response(response: str) -> ParsedResponse:
 
     lines = response.strip().splitlines()
 
-    # Check for a final answer first.
+    # Recognize an explicit final answer.
     for index, line in enumerate(lines):
         if line.strip().startswith("Final Answer:"):
             first_line = line.strip().partition(":")[2].strip()
             remaining_lines = lines[index + 1:]
+
             answer = "\n".join(
                 [first_line, *remaining_lines]
             ).strip()
@@ -46,13 +47,12 @@ def parse_response(response: str) -> ParsedResponse:
             thought = line.strip().partition(":")[2].strip()
             break
 
-    # Find the requested tool action.
+    # Recognize a tool action.
     for line in lines:
         stripped_line = line.strip()
 
         if stripped_line.startswith("Action:"):
             action = stripped_line.partition(":")[2].strip()
-
             tool_name, separator, tool_input = action.partition(":")
 
             tool_name = tool_name.strip()
@@ -72,6 +72,10 @@ def parse_response(response: str) -> ParsedResponse:
                 thought=thought,
             )
 
-    raise ValueError(
-        "No valid action or final answer found in the model response."
+    # No action or explicit final-answer prefix was found.
+    # Treat ordinary natural-language output as a final answer.
+    return ParsedResponse(
+        kind="final",
+        content=response.strip(),
     )
+
