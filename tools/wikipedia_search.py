@@ -1,4 +1,5 @@
 import json
+from urllib.parse import quote
 
 import requests
 import wikipedia
@@ -11,41 +12,44 @@ class WikipediaSearchTool(BaseTool):
 
     name = "wikipedia_search"
     description = (
-        "Searches Wikipedia and retrieves a short summary of the "
-        "best matching article. Input must be JSON with a required "
-        '"query" string and optional "language" string (default "en") '
-        'and "results" integer from 1 to 5. Example: '
-        '{"query": "Alan Turing", "language": "en", "results": 3}.'
+        "Searches Wikipedia and retrieves a short article summary. "
+        'Input JSON: {"query": "Alan Turing", '
+        '"language": "en", "results": 3}. '
+        "Language is optional and defaults to en. Results must be 1 to 5."
     )
 
     def execute(self, tool_input: str) -> str:
+        # Only catch JSON errors around JSON parsing.
         try:
             data = json.loads(tool_input)
+        except json.JSONDecodeError as error:
+            return f"Error: invalid JSON input: {error.msg}."
 
-            if not isinstance(data, dict):
-                return "Error: input must be a JSON object."
+        if not isinstance(data, dict):
+            return "Error: input must be a JSON object."
 
-            query = data.get("query")
-            language = data.get("language", "en")
-            result_limit = data.get("results", 3)
+        query = data.get("query")
+        language = data.get("language", "en")
+        result_limit = data.get("results", 3)
 
-            if not isinstance(query, str) or not query.strip():
-                return "Error: 'query' must be a non-empty string."
+        if not isinstance(query, str) or not query.strip():
+            return "Error: 'query' must be a non-empty string."
 
-            if (
-                not isinstance(language, str)
-                or not language.strip()
-                or not language.replace("-", "").isalpha()
-            ):
-                return "Error: 'language' must be a valid language code."
+        if (
+            not isinstance(language, str)
+            or not language.strip()
+            or not language.replace("-", "").isalpha()
+        ):
+            return "Error: 'language' must be a valid language code."
 
-            if (
-                not isinstance(result_limit, int)
-                or isinstance(result_limit, bool)
-                or not 1 <= result_limit <= 5
-            ):
-                return "Error: 'results' must be an integer from 1 to 5."
+        if (
+            not isinstance(result_limit, int)
+            or isinstance(result_limit, bool)
+            or not 1 <= result_limit <= 5
+        ):
+            return "Error: 'results' must be an integer from 1 to 5."
 
+        try:
             wikipedia.set_lang(language.strip().lower())
 
             titles = wikipedia.search(
@@ -65,46 +69,42 @@ class WikipediaSearchTool(BaseTool):
                     auto_suggest=False,
                 )
             except wikipedia.exceptions.DisambiguationError as error:
-                options = error.options[:5]
-                formatted_options = "\n".join(
-                    f"- {option}" for option in options
+                options = "\n".join(
+                    f"- {option}" for option in error.options[:5]
                 )
-
                 return (
                     f"'{selected_title}' is ambiguous. "
-                    "Choose a more specific article:\n"
-                    f"{formatted_options}"
+                    f"Choose a more specific article:\n{options}"
                 )
             except wikipedia.exceptions.PageError:
                 return (
-                    f"Error: the Wikipedia article "
-                    f"'{selected_title}' could not be found."
+                    f"Error: Wikipedia article '{selected_title}' "
+                    "could not be found."
                 )
 
-            other_titles = titles[1:]
+            article_url = (
+                "https://"
+                + language.strip().lower()
+                + ".wikipedia.org/wiki/"
+                + quote(selected_title.replace(" ", "_"), safe="()")
+            )
 
             output = [
                 f"Article: {selected_title}",
                 f"Summary: {summary}",
-                f"Source: https://en.wikipedia.org/wiki/"
-                f"{selected_title.replace(' ', '_')}",
+                f"Source: {article_url}",
             ]
 
-            if other_titles:
+            if len(titles) > 1:
                 output.append(
-                    "Other search results: "
-                    + "; ".join(other_titles)
+                    "Other search results: " + "; ".join(titles[1:])
                 )
 
             return "\n".join(output)
 
-        except json.JSONDecodeError:
-            return (
-                "Error: provide valid JSON with a 'query' field."
-            )
         except wikipedia.exceptions.HTTPTimeoutError:
             return "Error: Wikipedia request timed out."
-        except wikipedia.exceptions.WikipediaException as error:
-            return f"Error: Wikipedia request failed: {error}"
         except requests.exceptions.RequestException:
             return "Error: could not connect to Wikipedia."
+        except wikipedia.exceptions.WikipediaException as error:
+            return f"Error: Wikipedia request failed: {error}"
