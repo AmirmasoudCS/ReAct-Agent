@@ -224,3 +224,6 @@ test.py
 
 # tree structure
 tree.txt
+
+# Sessions
+sessions/
