@@ -1,3 +1,4 @@
+
 from llm.client import LLMClient
 from prompts.system_prompt import build_system_prompt
 from tools.registry import ToolRegistry
@@ -20,6 +21,7 @@ class ReActAgent:
         llm: LLMClient,
         tools: ToolRegistry,
         max_steps: int = 5,
+        messages: list[Message] | None = None,
     ) -> None:
         if max_steps < 1:
             raise ValueError("max_steps must be at least 1.")
@@ -27,7 +29,14 @@ class ReActAgent:
         self.llm = llm
         self.tools = tools
         self.max_steps = max_steps
-        self.messages: list[Message] = []
+        self.messages = list(messages) if messages is not None else []
+
+    def get_messages(self) -> list[dict[str, str]]:
+        """Return conversation history in a JSON-serializable format."""
+        return [
+            {"role": message.role, "content": message.content}
+            for message in self.messages
+        ]
 
     def run(self, user_input: str) -> str:
         """Process a user request and return the final answer."""
@@ -84,7 +93,6 @@ class ReActAgent:
             if parsed.kind == "final":
                 return parsed.content
 
-            # The parser guarantees these fields for an action.
             assert parsed.tool_name is not None
             assert parsed.tool_input is not None
 
