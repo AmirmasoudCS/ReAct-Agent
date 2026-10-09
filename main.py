@@ -2,6 +2,8 @@ from agent import ReActAgent
 from llm.client import LLMClient
 from tools.calculator import CalculatorTool
 from tools.registry import ToolRegistry
+from utils.console import console, print_agent, print_error
+from rich.text import Text
 
 
 def main() -> None:
@@ -11,22 +13,38 @@ def main() -> None:
     llm = LLMClient()
     agent = ReActAgent(llm=llm, tools=tools)
 
-    print("ReAct Agent (type 'exit' to quit)")
+    console.print(
+        Text(
+            "ReAct Agent (type 'exit' to quit)",
+            style="bold white",
+        )
+    )
 
     while True:
-        user_input = input("\nYou: ").strip()
-
-        if user_input.lower() == "exit":
-            break
-
-        if not user_input:
-            continue
-
         try:
+            user_input = console.input(
+                "\n[bold #60A5FA]You: [/bold #60A5FA]"
+            ).strip()
+
+            if user_input.lower() == "exit":
+                console.print(
+                    Text("Goodbye!", style="dim")
+                )
+                break
+
+            if not user_input:
+                continue
+
             answer = agent.run(user_input)
-            print(f"\nAgent: {answer}")
+            print_agent(answer)
+
+        except (KeyboardInterrupt, EOFError):
+            console.print(
+                Text("\nGoodbye!", style="dim")
+            )
+            break
         except Exception as error:
-            print(f"\nError: {error}")
+            print_error(str(error))
 
 
 if __name__ == "__main__":
