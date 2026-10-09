@@ -75,3 +75,29 @@ def parse_response(response: str) -> ParsedResponse:
     raise ValueError(
         "No valid action or final answer found in the model response."
     )
+
+def test_parses_action_with_channel_marker():
+    response = (
+        'Thought: Search Wikipedia.\n'
+        '<channel|>Action: wikipedia_search: '
+        '{"query": "Olleselinus birthplace"}\n'
+        'PAUSE'
+    )
+
+    parsed = parse_response(response)
+
+    assert parsed.kind == "action"
+    assert parsed.tool_name == "wikipedia_search"
+    assert parsed.tool_input == '{"query": "Olleselinus birthplace"}'
+
+
+def test_parses_final_answer_with_channel_marker():
+    response = (
+        '<channel|>Final Answer: '
+        'I could not find a reliable match.'
+    )
+
+    parsed = parse_response(response)
+
+    assert parsed.kind == "final"
+    assert parsed.content == "I could not find a reliable match."
