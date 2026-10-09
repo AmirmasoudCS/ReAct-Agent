@@ -61,6 +61,19 @@ def parse_response(response: str) -> ParsedResponse:
                 thought=thought,
             )
 
-    raise ValueError(
-        "No valid action or final answer found in the model response."
-    )
+        # Treat an ordinary, non-empty response as a final answer.
+        # This allows natural conversational responses such as greetings.
+        fallback = "\n".join(
+            line for line in lines if line.strip()
+        ).strip()
+
+        if fallback:
+            return ParsedResponse(
+                kind="final",
+                content=fallback,
+                thought=thought,
+            )
+
+        raise ValueError(
+            "No valid action or final answer found in the model response."
+        )
