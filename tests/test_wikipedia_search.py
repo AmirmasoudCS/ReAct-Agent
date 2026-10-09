@@ -96,8 +96,8 @@ def test_search_returns_summary_and_source(monkeypatch):
 
     assert summary_params["action"] == "query"
     assert summary_params["prop"] == "extracts"
-    assert summary_params["pageids"] == 1208
-    assert summary_params["explaintext"] == 1
+    assert str(summary_params["pageids"]) == "1208"
+    assert summary_params["explaintext"] in (1, "1", True)
 
 
 def test_search_returns_other_results(monkeypatch):
@@ -387,6 +387,24 @@ def test_search_handles_unexpected_response_structure(monkeypatch):
     assert "unexpected response structure" in result
 
 
+def test_search_handles_unexpected_summary_structure(monkeypatch):
+    tool = WikipediaSearchTool()
+
+    responses = [
+        make_response(make_search_data((1208, "Alan Turing"))),
+        make_response({"unexpected": "structure"}),
+    ]
+    monkeypatch.setattr(
+        tool.session,
+        "get",
+        lambda url, **kwargs: responses.pop(0),
+    )
+
+    result = tool.execute('{"query": "Alan Turing"}')
+
+    assert result.startswith("Error:")
+
+
 def test_session_has_user_agent():
     tool = WikipediaSearchTool()
 
@@ -394,19 +412,18 @@ def test_session_has_user_agent():
     assert "ReAct-Agent" in tool.session.headers["User-Agent"]
 
 
-def test_timeout_is_used():
+def test_timeout_is_used(monkeypatch):
     tool = WikipediaSearchTool(timeout=7)
 
-    response = make_response(
-        make_search_data((1208, "Alan Turing"))
+    get_calls = configure_successful_search(
+        monkeypatch,
+        tool,
+        title="Alan Turing",
+        page_id=1208,
+        summary="Alan Turing was a British mathematician.",
     )
-    monkeypatch_calls = []
 
-    def mock_get(url, **kwargs):
-        monkeypatch_calls.append(kwargs)
-        return response
-
-    tool.session.get = mock_get
     tool.execute('{"query": "Alan Turing"}')
 
-    assert monkeypatch_calls[0]["timeout"] == 7
+    assert len(get_calls) == 2
+    assert all(kwargs["timeout"] == 7 for _, kwargs in get_calls)
