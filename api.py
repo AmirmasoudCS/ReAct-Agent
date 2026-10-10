@@ -1,7 +1,10 @@
+import json
+from collections.abc import Iterator
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from agent import ReActAgent
@@ -21,7 +24,7 @@ from utils.react_parser import parse_response
 app = FastAPI(
     title="ReAct Agent API",
     description="HTTP API for the ReAct agent and its persistent sessions.",
-    version="1.0.0",
+    version="1.1.0",
 )
 
 app.add_middleware(
@@ -171,6 +174,36 @@ def serialize_session(
     return result
 
 
+def load_session_or_raise(session_id: str) -> dict[str, Any]:
+    """Load a session, translating storage errors into HTTP errors."""
+    try:
+        return session_manager.load_session(session_id)
+    except FileNotFoundError as error:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found.",
+        ) from error
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error),
+        ) from error
+
+
+def name_session_from_first_message(
+    session_id: str,
+    content: str,
+) -> None:
+    """Give a new session a readable display name."""
+    proposed_name = " ".join(content.split())[:40]
+
+    try:
+        session_manager.rename_session(session_id, proposed_name)
+    except ValueError:
+        # A duplicate display name must not prevent the response.
+        pass
+
+
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
@@ -209,18 +242,7 @@ def create_session(
 
 @app.get("/api/sessions/{session_id}")
 def get_session(session_id: str) -> dict[str, Any]:
-    try:
-        session = session_manager.load_session(session_id)
-    except FileNotFoundError as error:
-        raise HTTPException(
-            status_code=404,
-            detail="Session not found.",
-        ) from error
-    except ValueError as error:
-        raise HTTPException(
-            status_code=400,
-            detail=str(error),
-        ) from error
+    session = load_session_or_raise(session_id)
 
     return serialize_session(session, include_messages=True)
 
@@ -238,18 +260,7 @@ def send_message(
             detail="Message content cannot be empty.",
         )
 
-    try:
-        session = session_manager.load_session(session_id)
-    except FileNotFoundError as error:
-        raise HTTPException(
-            status_code=404,
-            detail="Session not found.",
-        ) from error
-    except ValueError as error:
-        raise HTTPException(
-            status_code=400,
-            detail=str(error),
-        ) from error
+    session = load_session_or_raise(session_id)
 
     try:
         agent = build_agent(session)
@@ -261,18 +272,11 @@ def send_message(
             agent.get_messages(),
         )
 
-        # Generate a readable display name from the first user message.
         if not session["messages"]:
-            proposed_name = " ".join(content.split())[:40]
-
-            try:
-                session_manager.rename_session(
-                    session["session_id"],
-                    proposed_name,
-                )
-            except ValueError:
-                # A duplicate display name must not prevent the response.
-                pass
+            name_session_from_first_message(
+                session["session_id"],
+                content,
+            )
 
         updated_session = session_manager.load_session(
             session["session_id"]
@@ -296,3 +300,111 @@ def send_message(
         ),
         "answer": answer,
     }
+
+
+def sse(event: dict[str, Any]) -> str:
+    """Format one Server-Sent Event."""
+    return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+
+def stream_agent_events(
+    session: dict[str, Any],
+    content: str,
+    is_first_message: bool,
+) -> Iterator[str]:
+    """Run the agent and yield its steps as Server-Sent Events.
+
+    Event types: token, action, observation, final, error, and a last
+    "done" event carrying the saved session and the full transcript.
+    """
+    agent: ReActAgent | None = None
+    answer = ""
+
+    try:
+        agent = build_agent(session)
+
+        for event in agent.run_stream(content):
+            if event["type"] == "final":
+                answer = event["content"]
+            elif event["type"] == "error":
+                answer = event["message"]
+
+            yield sse(event)
+
+    except Exception as error:
+        print(f"Agent request failed: {error}")
+        yield sse({
+            "type": "error",
+            "message": "The agent failed to process this message.",
+        })
+
+    finally:
+        # Runs on success, on failure, and when the client disconnects
+        # (the generator is closed). Nothing may be yielded in here.
+        if agent is not None:
+            try:
+                session_manager.save_session(
+                    session["session_id"],
+                    agent.get_messages(),
+                )
+
+                if is_first_message:
+                    name_session_from_first_message(
+                        session["session_id"],
+                        content,
+                    )
+            except Exception as error:
+                print(f"Could not save session: {error}")
+
+    if agent is None:
+        return
+
+    try:
+        updated_session = session_manager.load_session(
+            session["session_id"]
+        )
+    except Exception as error:
+        print(f"Could not reload session: {error}")
+        yield sse({
+            "type": "error",
+            "message": "The conversation could not be saved.",
+        })
+        return
+
+    yield sse({
+        "type": "done",
+        "session": serialize_session(updated_session),
+        "messages": get_display_messages(agent.get_messages()),
+        "answer": answer,
+    })
+
+
+@app.post("/api/sessions/{session_id}/messages/stream")
+def stream_message(
+    session_id: str,
+    request: SendMessageRequest,
+) -> StreamingResponse:
+    content = request.content.strip()
+
+    if not content:
+        raise HTTPException(
+            status_code=422,
+            detail="Message content cannot be empty.",
+        )
+
+    # Validate before streaming starts, so a bad session id is a normal
+    # 404/400 response rather than an error inside the event stream.
+    session = load_session_or_raise(session_id)
+
+    return StreamingResponse(
+        stream_agent_events(
+            session,
+            content,
+            is_first_message=not session["messages"],
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
