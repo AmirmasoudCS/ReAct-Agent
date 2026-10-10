@@ -11,6 +11,11 @@ from utils.message import Message
 load_dotenv()
 
 
+def _debug_enabled() -> bool:
+    """Return True when OLLAMA_DEBUG is set to a truthy value."""
+    return os.getenv("OLLAMA_DEBUG", "").lower() in {"1", "true", "yes"}
+
+
 class LLMClient:
     """Client for communicating with a local Ollama model."""
 
@@ -94,6 +99,27 @@ class LLMClient:
 
         return request
 
+    @staticmethod
+    def _log_empty_response(
+        request: dict[str, Any],
+        finish_reason: str | None,
+        reasoning_chars: int,
+    ) -> None:
+        """Print why a reply was empty (only when OLLAMA_DEBUG is set)."""
+        if not _debug_enabled():
+            return
+
+        last = request["messages"][-1]
+
+        print(
+            "[llm debug] empty response | "
+            f"finish_reason={finish_reason!r} | "
+            f"reasoning_chars={reasoning_chars} | "
+            f"max_tokens={request['max_tokens']} | "
+            f"last_message_role={last['role']!r} | "
+            f"last_message_tail={last['content'][-200:]!r}"
+        )
+
     def generate_response(
         self,
         system_prompt: str,
@@ -105,10 +131,24 @@ class LLMClient:
 
         response = self.client.chat.completions.create(**request)
 
-        content = response.choices[0].message.content
+        choice = response.choices[0]
+        content = choice.message.content
 
         if content is None:
             raise ValueError("The model returned an empty response.")
+
+        if not content.strip():
+            # Ollama may return thinking text in a separate field.
+            reasoning = (
+                getattr(choice.message, "reasoning", None)
+                or getattr(choice.message, "reasoning_content", None)
+                or ""
+            )
+            self._log_empty_response(
+                request,
+                choice.finish_reason,
+                len(reasoning),
+            )
 
         return content.strip()
 
@@ -124,14 +164,32 @@ class LLMClient:
 
         stream = self.client.chat.completions.create(**request)
 
+        produced = False
+        finish_reason = None
+        reasoning_chars = 0
+
         try:
             for chunk in stream:
                 if not chunk.choices:
                     continue
 
-                delta = chunk.choices[0].delta.content
+                choice = chunk.choices[0]
+
+                if choice.finish_reason:
+                    finish_reason = choice.finish_reason
+
+                reasoning = (
+                    getattr(choice.delta, "reasoning", None)
+                    or getattr(choice.delta, "reasoning_content", None)
+                )
+
+                if reasoning:
+                    reasoning_chars += len(reasoning)
+
+                delta = choice.delta.content
 
                 if delta:
+                    produced = True
                     yield delta
         finally:
             # Runs when the stream ends AND when the consumer stops early,
@@ -140,3 +198,10 @@ class LLMClient:
 
             if callable(close):
                 close()
+
+        if not produced:
+            self._log_empty_response(
+                request,
+                finish_reason,
+                reasoning_chars,
+            )
