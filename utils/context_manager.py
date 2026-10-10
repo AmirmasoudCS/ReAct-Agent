@@ -1,4 +1,3 @@
-
 """Manage conversation context, token budgeting, and summary compaction."""
 
 from __future__ import annotations
@@ -7,6 +6,7 @@ from prompts.summary_prompt import (
     SUMMARY_COMPRESSION_PROMPT,
     SUMMARY_SYSTEM_PROMPT,
 )
+from utils.console import print_error
 from utils.message import Message
 
 
@@ -228,10 +228,13 @@ class ContextManager:
             "Produce the updated summary."
         )
 
+        # stop=[]: the agent's stop sequences ("PAUSE", "Observation:")
+        # would cut a summary that mentions an observation.
         updated_summary = self.llm.generate_response(
             SUMMARY_SYSTEM_PROMPT,
             [Message("user", user_content)],
             max_tokens=self.summary_output_tokens,
+            stop=[],
         ).strip()
 
         if not updated_summary:
@@ -259,6 +262,7 @@ class ContextManager:
                 )
             ],
             max_tokens=self.summary_output_tokens,
+            stop=[],
         ).strip()
 
         if not compressed_summary:
@@ -345,6 +349,12 @@ class ContextManager:
                 try:
                     self._compact_messages(context_messages, cutoff)
                 except Exception as error:
+                    # Keep going with the full context when it still fits,
+                    # but never fail silently.
+                    print_error(
+                        f"Conversation summarization failed: {error}"
+                    )
+
                     if estimated_tokens > self.input_budget_tokens:
                         raise RuntimeError(
                             "The conversation exceeds the input token "
