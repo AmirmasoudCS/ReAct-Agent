@@ -4,12 +4,14 @@ import { groupActivity } from "../utils/activity";
 import { getToolIcon } from "./toolMeta";
 import "./ActivityPanel.css";
 
-function ToolStep({ step, renderResult }) {
+function ToolStep({ step, renderResult, live }) {
   const [open, setOpen] = useState(false);
   const Icon = getToolIcon(step.toolName);
   const hasResult = step.result !== null;
   const isError = step.status === "error";
-  const isPending = step.status === "pending";
+  // A tool without a result is only "running" while the answer is live.
+  // After a stop it simply has no result.
+  const isRunning = live && step.status === "pending";
 
   return (
     <li className={`activity__step ${isError ? "activity__step--error" : ""}`}>
@@ -22,7 +24,7 @@ function ToolStep({ step, renderResult }) {
         title={
           hasResult
             ? "Show result"
-            : isPending
+            : isRunning
               ? "Running..."
               : "No result recorded"
         }
@@ -33,7 +35,7 @@ function ToolStep({ step, renderResult }) {
         <span className="activity__tool">{step.toolName}</span>
         <code className="activity__input">{step.toolInput}</code>
 
-        {isPending && (
+        {isRunning && (
           <Loader2
             className="activity__spinner"
             size={15}
@@ -90,6 +92,7 @@ export default function ActivityPanel({
           <ToolStep
             key={step.id}
             step={step}
+            live={live}
             renderResult={toolRenderers?.[step.toolName.toLowerCase()]}
           />
         ))}
