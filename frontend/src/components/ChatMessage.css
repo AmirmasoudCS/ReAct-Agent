@@ -97,3 +97,12 @@
     visibility: hidden;
   }
 }
+
+/* APPEND this to the end of your existing ChatMessage.css */
+
+.chat-message__note {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
