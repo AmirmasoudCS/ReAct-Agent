@@ -105,6 +105,89 @@ Open the local URL printed in your terminal, usually `http://localhost:5173`.
 
 Keep both the backend and frontend terminals running while using the application.
 
+## 💻 CLI Usage
+
+The agent can be used directly from the terminal. Run all commands from the project root with the virtual environment activated.
+
+```bash
+python -m main <command> [streaming_option]
+```
+
+### Available Commands
+
+| Command                                         | Description                                                                                               |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `-n`, `--new`                                   | Create a new conversation session and start chatting.                                                     |
+| `-l`, `--list`                                  | List saved sessions and interactively select one to resume.                                               |
+| `-sn`, `--session-name NAME`                    | Resume a session by its name or ID.                                                                       |
+| `-rs`, `--rename-session CURRENT_NAME NEW_NAME` | Rename a saved session without opening it.                                                                |
+| `-rm`, `--remove [SESSION]`                     | Remove a saved session by name or ID, or select one interactively. Requires confirmation before deletion. |
+| `--help`                                        | Display the available arguments and their descriptions.                                                   |
+
+You must specify exactly one session operation from `-n`, `-l`, `-sn`, `-rs`, or `-rm`.
+
+### Streaming Options
+
+These optional flags control how the agent displays its responses.
+
+| Option         | Description                                                               |
+| -------------- | ------------------------------------------------------------------------- |
+| `--stream-on`  | Display the response token by token as it is generated.                   |
+| `--stream-off` | Wait for the complete response before displaying it. This is the default. |
+
+### Examples
+
+Create a new conversation:
+
+```bash
+python -m main --new
+```
+
+List saved sessions and select one to resume:
+
+```bash
+python -m main --list
+```
+
+Resume a session by name or ID:
+
+```bash
+python -m main --session-name "My Research"
+```
+
+Rename a saved session:
+
+```bash
+python -m main --rename-session "My Research" "AI Research"
+```
+
+Select a session interactively and remove it:
+
+```bash
+python -m main --remove
+```
+
+Remove a specific session by name or ID:
+
+```bash
+python -m main --remove "My Research"
+```
+
+Start a new session with response streaming enabled:
+
+```bash
+python -m main --new --stream-on
+```
+
+Display the complete list of CLI options:
+
+```bash
+python -m main --help
+```
+
+During a conversation, type `exit` to leave the session. Conversation history is saved so that you can resume sessions later.
+
+
 ## ⚙️ Configuration
 
 The root `config.yaml` file contains settings for the language model, agent execution, tool timeouts, and conversation context management.
