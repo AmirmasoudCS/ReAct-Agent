@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from agent import ReActAgent
 from llm.client import LLMClient
 from tools.calculator import CalculatorTool
+from tools.datetime import DateTimeTool
 from tools.registry import ToolRegistry
 from tools.weather import WeatherTool
 from tools.web_search import WebSearchTool
@@ -114,6 +115,7 @@ def build_agent(session: dict[str, Any]) -> ReActAgent:
 
     tools = ToolRegistry()
     tools.register(CalculatorTool())
+    tools.register(DateTimeTool())
     tools.register(
         WikipediaSearchTool(timeout=config["tools"]["timeout"])
     )
