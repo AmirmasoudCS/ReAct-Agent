@@ -118,3 +118,15 @@
     transition: none;
   }
 }
+
+/* APPEND this to the end of your existing ActivityPanel.css */
+
+.activity__spinner {
+  animation: activity-spin 1s linear infinite;
+}
+
+@keyframes activity-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
