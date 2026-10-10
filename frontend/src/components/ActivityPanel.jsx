@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight, TriangleAlert } from "lucide-react";
+import { ChevronRight, Loader2, TriangleAlert } from "lucide-react";
 import { groupActivity } from "../utils/activity";
 import { getToolIcon } from "./toolMeta";
 import "./ActivityPanel.css";
@@ -9,6 +9,7 @@ function ToolStep({ step, renderResult }) {
   const Icon = getToolIcon(step.toolName);
   const hasResult = step.result !== null;
   const isError = step.status === "error";
+  const isPending = step.status === "pending";
 
   return (
     <li className={`activity__step ${isError ? "activity__step--error" : ""}`}>
@@ -18,13 +19,27 @@ function ToolStep({ step, renderResult }) {
         onClick={() => setOpen((current) => !current)}
         aria-expanded={hasResult ? open : undefined}
         disabled={!hasResult}
-        title={hasResult ? "Show result" : "No result recorded"}
+        title={
+          hasResult
+            ? "Show result"
+            : isPending
+              ? "Running..."
+              : "No result recorded"
+        }
       >
         <span className="activity__icon">
           <Icon size={15} />
         </span>
         <span className="activity__tool">{step.toolName}</span>
         <code className="activity__input">{step.toolInput}</code>
+
+        {isPending && (
+          <Loader2
+            className="activity__spinner"
+            size={15}
+            aria-label="Running"
+          />
+        )}
 
         {isError && (
           <span className="activity__flag" title="The tool returned an error">
@@ -47,11 +62,16 @@ function ToolStep({ step, renderResult }) {
 /**
  * Shows the tools the agent used for one answer.
  *
+ * live: true while the answer is still being produced ("Using" vs "Used").
  * toolRenderers: optional map of lowercase tool name -> (step) => node,
  * e.g. { weather: (step) => <WeatherCard text={step.result} /> }.
  * Tools without an entry fall back to the raw result text.
  */
-export default function ActivityPanel({ activity, toolRenderers }) {
+export default function ActivityPanel({
+  activity,
+  toolRenderers,
+  live = false,
+}) {
   const steps = groupActivity(activity);
 
   if (steps.length === 0) {
@@ -61,7 +81,8 @@ export default function ActivityPanel({ activity, toolRenderers }) {
   return (
     <section className="activity" aria-label="Agent activity">
       <p className="activity__heading">
-        Used {steps.length} {steps.length === 1 ? "tool" : "tools"}
+        {live ? "Using" : "Used"} {steps.length}{" "}
+        {steps.length === 1 ? "tool" : "tools"}
       </p>
 
       <ul className="activity__steps">
