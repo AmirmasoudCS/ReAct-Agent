@@ -1,4 +1,3 @@
-
 llm:
   model: gemma4:e4b
   temperature: 0.2
@@ -14,11 +13,11 @@ tools:
   timeout: 15
 
 context:
-  context_window_tokens: 8192     # Total token capacity assumed for the model's context window
-  max_output_tokens: 1024         # Tokens reserved for the model's response
-  safety_margin_tokens: 256       # Extra room for estimation errors and formatting overhead
+  context_window_tokens: 16384    # Must match the context length Ollama actually loads (num_ctx), not the model's maximum
+  max_output_tokens: 2048         # Tokens reserved for the model's response (thinking models need headroom)
+  safety_margin_tokens: 512       # Extra room for estimation errors and formatting overhead
   summary_trigger_ratio: 0.8      # Start considering compaction at 80% of the available input budget
-  recent_turns: 2                 # Number of recent user turns to preserve outside the summary
-  summary_chunk_tokens: 1500      # Approximate size of each batch of older messages sent for summarization
-  summary_max_tokens: 800         # Maximum estimated size of the stored summary
-  summary_output_tokens: 800      # Maximum tokens requested for each summarization or compression response
+  recent_turns: 3                 # Number of recent user turns to preserve outside the summary
+  summary_chunk_tokens: 3000      # Approximate size of each batch of older messages sent for summarization
+  summary_max_tokens: 1200        # Maximum estimated size of the stored summary
+  summary_output_tokens: 1200     # Maximum tokens requested for each summarization or compression response
