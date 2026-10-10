@@ -2,6 +2,8 @@
 
 A local ReAct (Reasoning and Acting) agent powered by Ollama. It uses a language model to select tools, process their observations, and generate answers. The project includes a FastAPI backend and a React frontend with streaming responses and persistent conversations.
 
+[![Architecture diagram of amirmasoudcs/react-agent](https://gitdiagram.com/amirmasoudcs/react-agent/diagram.png)](https://gitdiagram.com/amirmasoudcs/react-agent?utm_source=readme&utm_medium=picture)
+
 ## ✨ Features
 
 The agent supports tool-assisted reasoning with a calculator, date and time utility, weather lookup, Wikipedia search, and web search. Conversations can be created, resumed, renamed, and deleted, while context management summarizes older history to help fit within the model's context window.
