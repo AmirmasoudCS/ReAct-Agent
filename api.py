@@ -21,6 +21,13 @@ from utils.context_manager import ContextManager
 from utils.message import Message
 from utils.session_manager import SessionManager
 from utils.session_title import generate_session_title, make_title_unique
+from utils.app_settings import (
+    SETTING_LIMITS,
+    default_settings,
+    load_settings,
+    save_settings,
+    validate_settings,
+)
 from utils.react_parser import parse_response
 
 
@@ -43,6 +50,18 @@ app.add_middleware(
 
 session_manager = SessionManager()
 config = load_config()
+
+# Settings the user can change in the UI (model, temperature, max steps).
+# config.yaml holds the defaults; settings.json holds the user's changes.
+# They are read each time an agent is built, so a change applies from the
+# next message on.
+settings_lock = threading.Lock()
+current_settings = load_settings(config)
+
+
+def get_settings() -> dict[str, Any]:
+    with settings_lock:
+        return dict(current_settings)
 
 BUSY_MESSAGE = (
     "This conversation is busy. Wait for the agent to finish, "
@@ -73,14 +92,21 @@ class SendMessageRequest(BaseModel):
     content: str = Field(min_length=1, max_length=20_000)
 
 
+class UpdateSettingsRequest(BaseModel):
+    model: str | None = None
+    temperature: float | None = None
+    max_steps: int | None = None
+
+
 def build_agent(session: dict[str, Any]) -> ReActAgent:
     """Build an agent using the saved transcript for a session."""
+    settings = get_settings()
     llm_config = config["llm"]
     context_config = config["context"]
 
     llm = LLMClient(
-        model=llm_config["model"],
-        temperature=llm_config["temperature"],
+        model=settings["model"],
+        temperature=settings["temperature"],
         top_p=llm_config["top_p"],
         stop=llm_config["stop"],
         max_output_tokens=context_config["max_output_tokens"],
@@ -113,7 +139,7 @@ def build_agent(session: dict[str, Any]) -> ReActAgent:
     return ReActAgent(
         llm=llm,
         tools=tools,
-        max_steps=config["agent"]["max_steps"],
+        max_steps=settings["max_steps"],
         messages=messages,
         context_manager=context_manager,
     )
@@ -275,6 +301,98 @@ def keep_interrupted_answer(agent: ReActAgent, partial: str) -> None:
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+def list_installed_models() -> list[str]:
+    """Names of the models Ollama has installed."""
+    client = LLMClient(model=get_settings()["model"]).client
+
+    return sorted(item.id for item in client.models.list().data)
+
+
+def settings_payload() -> dict[str, Any]:
+    return {
+        "values": get_settings(),
+        "defaults": default_settings(config),
+        "limits": SETTING_LIMITS,
+    }
+
+
+@app.get("/api/models")
+def read_models() -> dict[str, Any]:
+    try:
+        models = list_installed_models()
+    except Exception as error:
+        print(f"Could not list models: {error}")
+        raise HTTPException(
+            status_code=503,
+            detail="Could not reach Ollama to list the installed models.",
+        ) from error
+
+    return {"models": models}
+
+
+@app.get("/api/settings")
+def read_settings() -> dict[str, Any]:
+    return settings_payload()
+
+
+@app.patch("/api/settings")
+def update_settings(request: UpdateSettingsRequest) -> dict[str, Any]:
+    submitted = {
+        "model": request.model,
+        "temperature": request.temperature,
+        "max_steps": request.max_steps,
+    }
+    changes = {
+        key: value for key, value in submitted.items() if value is not None
+    }
+
+    if not changes:
+        raise HTTPException(
+            status_code=422,
+            detail="No settings were provided.",
+        )
+
+    try:
+        cleaned = validate_settings(changes)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+    # A model that is not installed would make every later message fail,
+    # so check it before saving. Keeping the current model needs no check.
+    if "model" in cleaned and cleaned["model"] != get_settings()["model"]:
+        try:
+            installed = list_installed_models()
+        except Exception as error:
+            print(f"Could not list models: {error}")
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Could not check the installed models. "
+                    "Is Ollama running?"
+                ),
+            ) from error
+
+        if cleaned["model"] not in installed:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Model '{cleaned['model']}' is not installed.",
+            )
+
+    with settings_lock:
+        try:
+            save_settings({**current_settings, **cleaned})
+        except OSError as error:
+            print(f"Could not save settings: {error}")
+            raise HTTPException(
+                status_code=500,
+                detail="The settings could not be saved.",
+            ) from error
+
+        current_settings.update(cleaned)
+
+    return settings_payload()
 
 
 @app.get("/api/sessions")
