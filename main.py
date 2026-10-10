@@ -14,7 +14,7 @@ from utils.config import load_config
 from utils.context_manager import ContextManager
 from utils.message import Message
 from utils.session_manager import SessionManager
-from prompts.session_title_prompt import SESSION_TITLE_PROMPT
+from utils.session_title import generate_session_title, make_title_unique
 
 # Style of the "Agent: " label shown before a streamed answer.
 # Change it to match what print_agent() uses.
@@ -180,57 +180,6 @@ def choose_session_to_remove(
         f"No session matches '{identifier}'. "
         "Run --remove without a name to select from the list."
     )
-
-def generate_session_title(
-    llm: LLMClient,
-    first_query: str,
-) -> str:
-    """Generate a short session title from the user's first query."""
-    response = llm.generate_response(
-        SESSION_TITLE_PROMPT,
-        [Message("user", first_query)],
-        max_tokens=40,
-    )
-
-    title = response.strip().splitlines()[0].strip()
-    title = title.removeprefix("Title:").strip()
-    title = title.strip("\"'` ")
-    title = title.rstrip(" .,:;!?")
-
-    if not title:
-        raise ValueError("The model returned an empty session title.")
-
-    # Keep titles reasonably short for the CLI and session list.
-    if len(title) > 80:
-        title = title[:80].rsplit(" ", 1)[0].rstrip(" .,:;!?")
-
-    if not title:
-        raise ValueError("The model returned an invalid session title.")
-
-    return title
-
-
-def make_title_unique(
-    session_manager: SessionManager,
-    title: str,
-    session_id: str,
-) -> str:
-    """Add a numeric suffix when a title is already in use."""
-    existing_names = {
-        session["session_name"].casefold()
-        for session in session_manager.list_sessions()
-        if session["session_id"] != session_id
-    }
-
-    if title.casefold() not in existing_names:
-        return title
-
-    suffix = 2
-
-    while f"{title} ({suffix})".casefold() in existing_names:
-        suffix += 1
-
-    return f"{title} ({suffix})"
 
 
 def run_agent_turn(
