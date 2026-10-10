@@ -30,6 +30,10 @@ AgentEvent = dict[str, Any]
 # The counter resets after every valid response.
 MAX_FORMAT_RETRIES = 2
 
+# Longest observation (in characters) kept in the conversation. Longer
+# tool output is cut so a single result cannot fill the context window.
+MAX_OBSERVATION_CHARS = 6000
+
 INVALID_FORMAT_INSTRUCTION = (
     "Your response format was invalid. Answer with "
     "'Final Answer: ...' or use the required Action "
@@ -61,6 +65,18 @@ _STOP_LINE_RE = re.compile(
     r"^[ \t]*(?:Thought[ \t]*:|Action[ \t]*:|PAUSE[ \t]*$)",
     re.IGNORECASE | re.MULTILINE,
 )
+
+
+def _limit_observation(observation: str) -> str:
+    """Shorten a very long observation and say that it was cut."""
+    if len(observation) <= MAX_OBSERVATION_CHARS:
+        return observation
+
+    return (
+        observation[:MAX_OBSERVATION_CHARS].rstrip()
+        + "\n[Observation truncated: showing the first "
+        f"{MAX_OBSERVATION_CHARS} of {len(observation)} characters.]"
+    )
 
 
 class _FinalAnswerStreamer:
@@ -389,6 +405,7 @@ class ReActAgent:
                     parsed.tool_input,
                 )
 
+            observation = _limit_observation(observation)
             print_observation(observation)
 
             # Record the observation before yielding it, so the transcript
