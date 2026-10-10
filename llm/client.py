@@ -59,8 +59,13 @@ class LLMClient:
         system_prompt: str,
         messages: list[Message],
         max_tokens: int | None,
+        stop: list[str] | None = None,
     ) -> dict[str, Any]:
-        """Build the chat-completion request shared by both call styles."""
+        """Build the chat-completion request shared by both call styles.
+
+        stop=None uses the client's default stop sequences. An empty
+        list sends no stop sequences at all.
+        """
         output_limit = (
             self.max_output_tokens if max_tokens is None else max_tokens
         )
@@ -94,8 +99,10 @@ class LLMClient:
             "max_tokens": output_limit,
         }
 
-        if self.stop:
-            request["stop"] = self.stop
+        stop_sequences = self.stop if stop is None else stop
+
+        if stop_sequences:
+            request["stop"] = stop_sequences
 
         return request
 
@@ -125,9 +132,15 @@ class LLMClient:
         system_prompt: str,
         messages: list[Message],
         max_tokens: int | None = None,
+        stop: list[str] | None = None,
     ) -> str:
         """Send a prompt and conversation history to Ollama."""
-        request = self._build_request(system_prompt, messages, max_tokens)
+        request = self._build_request(
+            system_prompt,
+            messages,
+            max_tokens,
+            stop,
+        )
 
         response = self.client.chat.completions.create(**request)
 
