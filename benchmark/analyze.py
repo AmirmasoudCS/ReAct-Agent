@@ -14,12 +14,12 @@ ap.add_argument("--rater2", default=None); ap.add_argument("--outdir", default=s
 a = ap.parse_args(); out = pathlib.Path(a.outdir)
 
 tasks = {t["id"]: t for t in load_tasks()}
-df = pd.DataFrame(json.loads(l) for l in open(a.raw))
+df = pd.DataFrame(json.loads(l) for l in open(a.raw, encoding="utf-8"))
 df["key"] = df.task_id + "|" + df.condition + "|" + df.rep.astype(str)
 
 def load_h(r):
     p = out / f"human_{r}.jsonl"
-    return {json.loads(l)["key"]: json.loads(l)["correct"] for l in p.open()} if p.exists() else {}
+    return {json.loads(l)["key"]: json.loads(l)["correct"] for l in p.open(encoding="utf-8")} if p.exists() else {}
 h1 = load_h(a.rater)
 df["human"] = df.key.map(h1)
 df["correct"] = df.auto_correct.where(df.auto_correct.notna(), df.human)
@@ -106,7 +106,7 @@ f = lambda v: "" if pd.isna(v) else (f"{v:.3f}" if isinstance(v, (float, np.floa
 tbl = res[["n_tasks", "acc_react", "acc_no_react", "diff", "ci_lo", "ci_hi", "react_only_wins",
            "no_react_only_wins", "p_mcnemar", "p_holm"]]
 rep = ["# Benchmark report", "",
-       (json.load(open(out / "run_meta.json")) and f"Run meta: `{json.dumps(json.load(open(out / 'run_meta.json')))}`") if (out / "run_meta.json").exists() else "",
+       (f"Run meta: `{(out / 'run_meta.json').read_text(encoding='utf-8').strip()}`".replace("\n", " ") if (out / "run_meta.json").exists() else ""),
        "", "## Accuracy: ReAct vs no-ReAct (paired by task)", "", md(tbl, f), "",
        "`diff` = ReAct − no-ReAct accuracy, 95% bootstrap CI over tasks. p_mcnemar: exact McNemar on majority-vote "
        "outcomes. p_holm: Holm-corrected across categories (ALL excluded).", "",
@@ -116,5 +116,5 @@ rep = ["# Benchmark report", "",
        "\n".join(f"| {m_} | {r:.3f} | {n:.3f} | {p:.4f} |" for m_, r, n, p in sec), "",
        "## Tool behaviour (ReAct only)", ""] + [f"- {t}" for t in tool_txt] + \
       (["", "## Grading reliability", "", kappa_txt] if kappa_txt else [])
-(out / "report.md").write_text("\n".join(rep))
+(out / "report.md").write_text("\n".join(rep), encoding="utf-8")
 print("\n".join(rep))
