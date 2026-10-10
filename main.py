@@ -11,6 +11,7 @@ from tools.weather import WeatherTool
 from tools.registry import ToolRegistry
 from utils.console import console, print_agent, print_error
 from utils.config import load_config
+from utils.app_settings import load_settings
 from utils.context_manager import ContextManager
 from utils.message import Message
 from utils.session_manager import SessionManager
@@ -304,6 +305,7 @@ def main() -> None:
         needs_title = args.new and not session["messages"]
 
         config = load_config()
+        settings = load_settings(config)
 
         # Register tools.
         tools = ToolRegistry()
@@ -323,8 +325,8 @@ def main() -> None:
         context_config = config["context"]
 
         llm = LLMClient(
-            model=llm_config["model"],
-            temperature=llm_config["temperature"],
+            model=settings["model"],
+            temperature=settings["temperature"],
             top_p=llm_config["top_p"],
             stop=llm_config["stop"],
             max_output_tokens=context_config["max_output_tokens"],
@@ -346,7 +348,7 @@ def main() -> None:
         agent = ReActAgent(
             llm=llm,
             tools=tools,
-            max_steps=config["agent"]["max_steps"],
+            max_steps=settings["max_steps"],
             messages=messages,
             context_manager=context_manager,
         )
