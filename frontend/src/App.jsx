@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot, Sparkles } from "lucide-react";
+import { Bot, Sparkles, Eye, EyeOff } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
@@ -12,6 +12,7 @@ function formatMessages(messages = []) {
     id: `${message.role}-${index}`,
     role: message.role,
     content: message.content,
+    activity: message.activity ?? [],
   }));
 }
 
@@ -35,6 +36,69 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
+function ActivityPanel({ activity }) {
+  if (!activity?.length) {
+    return null;
+  }
+
+  return (
+    <div className="message-activity">
+      <div className="message-activity__heading">
+        Agent activity
+      </div>
+
+      <div className="message-activity__items">
+        {activity.map((item, index) => (
+          <div
+            className={`message-activity__item message-activity__item--${item.type}`}
+            key={`${item.type}-${index}`}
+          >
+            <span className="message-activity__marker" />
+
+            <div className="message-activity__body">
+              {item.type === "planning" && (
+                <>
+                  <span className="message-activity__label">
+                    Planning
+                  </span>
+                  <p>{item.content}</p>
+                </>
+              )}
+
+              {item.type === "action" && (
+                <>
+                  <span className="message-activity__label">
+                    Tool call
+                  </span>
+                  <p className="message-activity__tool">
+                    {item.tool_name}
+                  </p>
+                  {item.tool_input && (
+                    <pre className="message-activity__code">
+                      {item.tool_input}
+                    </pre>
+                  )}
+                </>
+              )}
+
+              {item.type === "observation" && (
+                <>
+                  <span className="message-activity__label">
+                    Tool result
+                  </span>
+                  <pre className="message-activity__code">
+                    {item.content}
+                  </pre>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [sessions, setSessions] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
@@ -42,6 +106,7 @@ export default function App() {
   const [isThinking, setIsThinking] = useState(false);
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [showInternalActivity, setShowInternalActivity] = useState(false);
   const [error, setError] = useState("");
 
   const messagesEndRef = useRef(null);
@@ -54,7 +119,7 @@ export default function App() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isThinking]);
+  }, [messages, isThinking, showInternalActivity]);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,7 +144,6 @@ export default function App() {
           })),
         );
 
-        // Open the most recently updated conversation, if one exists.
         const mostRecentSession = [...savedSessions].sort(
           (first, second) =>
             new Date(second.updated_at).getTime() -
@@ -87,7 +151,27 @@ export default function App() {
         )[0];
 
         if (mostRecentSession) {
-          await loadSession(mostRecentSession.id, cancelled);
+          const session = await apiRequest(
+            `/sessions/${mostRecentSession.id}`,
+          );
+
+          if (cancelled) {
+            return;
+          }
+
+          setSessions((currentSessions) =>
+            currentSessions.map((item) =>
+              item.id === session.id
+                ? {
+                    ...item,
+                    name: session.name,
+                    messages: formatMessages(session.messages),
+                  }
+                : item,
+            ),
+          );
+
+          setActiveSessionId(session.id);
         }
       } catch (requestError) {
         if (!cancelled) {
@@ -101,28 +185,6 @@ export default function App() {
           setIsLoadingSessions(false);
         }
       }
-    }
-
-    async function loadSession(sessionId, cancelled) {
-      const session = await apiRequest(`/sessions/${sessionId}`);
-
-      if (cancelled) {
-        return;
-      }
-
-      setSessions((currentSessions) =>
-        currentSessions.map((item) =>
-          item.id === session.id
-            ? {
-                ...item,
-                name: session.name,
-                messages: formatMessages(session.messages),
-              }
-            : item,
-        ),
-      );
-
-      setActiveSessionId(session.id);
     }
 
     loadSessions();
@@ -193,6 +255,7 @@ export default function App() {
       id: `pending-${Date.now()}`,
       role: "user",
       content: trimmedContent,
+      activity: [],
     };
 
     setError("");
@@ -258,30 +321,51 @@ export default function App() {
             <span>ReAct Agent</span>
           </div>
 
-          <span className="connection-status">
-            <span
-              className={`connection-status__dot ${
-                connectionStatus === "connected"
-                  ? ""
-                  : "connection-status__dot--disconnected"
+          <div className="chat-header__actions">
+            <button
+              type="button"
+              className={`activity-toggle ${
+                showInternalActivity ? "activity-toggle--active" : ""
               }`}
-            />
-            {connectionStatus === "connected"
-              ? "Connected"
-              : connectionStatus === "connecting"
-                ? "Connecting..."
-                : "Backend offline"}
-          </span>
+              onClick={() =>
+                setShowInternalActivity((current) => !current)
+              }
+              aria-pressed={showInternalActivity}
+              title={
+                showInternalActivity
+                  ? "Hide agent activity"
+                  : "Show agent activity"
+              }
+            >
+              {showInternalActivity ? (
+                <EyeOff size={16} />
+              ) : (
+                <Eye size={16} />
+              )}
+              <span>Activity</span>
+            </button>
+
+            <span className="connection-status">
+              <span
+                className={`connection-status__dot ${
+                  connectionStatus === "connected"
+                    ? ""
+                    : "connection-status__dot--disconnected"
+                }`}
+              />
+              {connectionStatus === "connected"
+                ? "Connected"
+                : connectionStatus === "connecting"
+                  ? "Connecting..."
+                  : "Backend offline"}
+            </span>
+          </div>
         </header>
 
         {error && (
           <div className="api-error" role="alert">
             <span>{error}</span>
-            <button
-              type="button"
-              onClick={() => setError("")}
-              aria-label="Dismiss error"
-            >
+            <button type="button" onClick={() => setError("")}>
               Dismiss
             </button>
           </div>
@@ -316,7 +400,14 @@ export default function App() {
           ) : (
             <div className="chat-messages">
               {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
+                <div className="chat-message-group" key={message.id}>
+                  <ChatMessage message={message} />
+
+                  {showInternalActivity &&
+                    message.role === "assistant" && (
+                      <ActivityPanel activity={message.activity} />
+                    )}
+                </div>
               ))}
 
               {isThinking && (
