@@ -31,10 +31,12 @@ export default function App() {
     patchSession,
     createSession,
     selectSession,
+    renameSession,
+    deleteSession,
     reload,
   } = useSessions(api);
 
-  const { sendMessage, isThinking } = useChat({
+  const { sendMessage, stopMessage, isThinking } = useChat({
     api,
     sessionId: activeSessionId,
     patchSession,
@@ -50,6 +52,8 @@ export default function App() {
         activeSessionId={activeSessionId}
         onNewChat={() => createSession()}
         onSelectSession={selectSession}
+        onRenameSession={renameSession}
+        onDeleteSession={deleteSession}
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((current) => !current)}
         isLoadingSessions={isLoading}
@@ -91,9 +95,10 @@ export default function App() {
         <footer className="chat-footer">
           <ChatInput
             onSend={sendMessage}
+            onStop={stopMessage}
+            isBusy={isThinking}
             disabled={
               !activeSessionId ||
-              isThinking ||
               isLoading ||
               connectionStatus !== "connected"
             }
