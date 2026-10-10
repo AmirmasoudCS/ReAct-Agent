@@ -9,6 +9,9 @@ UNEXPECTED_STRUCTURE_ERROR = (
     "Error: Wikipedia returned an unexpected response structure."
 )
 
+# Maximum characters returned per detail level. The extracts API accepts at
+# most 1200 for its own "exchars" limit, so "intro" is cut by the API and
+# "full" is cut locally (see _truncate_text).
 DETAIL_LIMITS = {
     "intro": 1200,
     "full": 4000,
@@ -29,6 +32,20 @@ def _get_query_list(data, key: str) -> list | None:
         return None
 
     return items
+
+
+def _truncate_text(text: str, limit: int) -> str:
+    """Cut text to about `limit` characters, ending on a line or sentence."""
+    if len(text) <= limit:
+        return text
+
+    cut = text[:limit]
+    boundary = max(cut.rfind("\n"), cut.rfind(". "))
+
+    if boundary > limit * 0.6:
+        cut = cut[: boundary + 1]
+
+    return cut.rstrip() + " ..."
 
 
 class WikipediaSearchTool(BaseTool):
@@ -135,15 +152,17 @@ class WikipediaSearchTool(BaseTool):
                 "action": "query",
                 "prop": "extracts",
                 "explaintext": 1,
-                "exchars": DETAIL_LIMITS[detail],
                 "pageids": page_id,
                 "format": "json",
                 "formatversion": 2,
             }
 
-            # Without exintro, the extract continues past the introduction.
+            # "exchars" is capped at 1200 by the API, so it is only used for
+            # the introduction. Without exintro and exchars the extract is
+            # the whole article, which is cut to size below.
             if detail == "intro":
                 summary_params["exintro"] = 1
+                summary_params["exchars"] = DETAIL_LIMITS["intro"]
 
             summary_response = self.session.get(
                 api_url,
@@ -171,6 +190,8 @@ class WikipediaSearchTool(BaseTool):
             summary = (page.get("extract") or "").strip()
             if not summary:
                 summary = "No introductory summary is available."
+            elif detail == "full":
+                summary = _truncate_text(summary, DETAIL_LIMITS["full"])
 
             article_url = (
                 f"https://{language}.wikipedia.org/wiki/"
