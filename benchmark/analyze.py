@@ -4,11 +4,13 @@ import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from scipy.stats import wilcoxon
 from statsmodels.stats.contingency_tables import mcnemar
 from statsmodels.stats.multitest import multipletests
-from tasks import load_tasks
+from task import load_tasks
+
+RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--raw", default="results/raw.jsonl"); ap.add_argument("--rater", default="rater1")
-ap.add_argument("--rater2", default=None); ap.add_argument("--outdir", default="results")
+ap.add_argument("--raw", default=str(RESULTS / "raw.jsonl")); ap.add_argument("--rater", default="rater1")
+ap.add_argument("--rater2", default=None); ap.add_argument("--outdir", default=str(RESULTS))
 a = ap.parse_args(); out = pathlib.Path(a.outdir)
 
 tasks = {t["id"]: t for t in load_tasks()}
