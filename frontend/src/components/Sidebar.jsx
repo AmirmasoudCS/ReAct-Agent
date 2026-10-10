@@ -21,6 +21,8 @@ export default function Sidebar({
   onSelectSession,
   onRenameSession,
   onDeleteSession,
+  onOpenSettings,
+  onOpenHelp,
   collapsed,
   onToggleCollapse,
   isLoadingSessions = false,
@@ -276,7 +278,7 @@ export default function Sidebar({
         <button
           className="sidebar__session"
           title="Settings"
-          onClick={() => alert("Settings will be implemented later.")}
+          onClick={onOpenSettings}
         >
           <Settings size={18} />
           {!collapsed && <span>Settings</span>}
@@ -285,7 +287,7 @@ export default function Sidebar({
         <button
           className="sidebar__session"
           title="Help"
-          onClick={() => alert("Help will be implemented later.")}
+          onClick={onOpenHelp}
         >
           <CircleHelp size={18} />
           {!collapsed && <span>Help</span>}
