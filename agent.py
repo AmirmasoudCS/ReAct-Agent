@@ -262,7 +262,8 @@ class ReActAgent:
 
         An empty or badly formatted response is retried (up to
         MAX_FORMAT_RETRIES times in a row). Once a retry succeeds, the
-        failed attempts are removed from the history.
+        failed attempts are removed from the history. Retries do not
+        use up max_steps.
         """
         if not user_input or not user_input.strip():
             raise ValueError("User input cannot be empty.")
@@ -276,7 +277,9 @@ class ReActAgent:
         # Index of the first message added by the current retry streak.
         retry_start: int | None = None
 
-        for _ in range(self.max_steps):
+        steps = 0
+
+        while steps < self.max_steps:
             context_prompt, context_messages = self._build_context(
                 system_prompt
             )
@@ -373,6 +376,7 @@ class ReActAgent:
                 retry_start = None
 
             format_retries = 0
+            steps += 1
 
             if parsed.kind == "final":
                 yield {
