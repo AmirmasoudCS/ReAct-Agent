@@ -56,6 +56,12 @@ export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
             The response was interrupted.
           </span>
         )}
+
+        {message.stopped && (
+          <span className="chat-message__note" role="status">
+            Stopped.
+          </span>
+        )}
       </div>
     </article>
   );
