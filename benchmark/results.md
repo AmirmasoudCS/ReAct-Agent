@@ -2,6 +2,16 @@
 
 ReAct clearly outperforms the plain model overall. Across all 180 tasks it reached about 0.91 accuracy against 0.49 without it. The two conditions disagreed on 84 tasks and ReAct won 80 of them (McNemar, p < 0.001).
 
+## Figures
+
+![ReAct vs no-ReAct accuracy with McNemar significance](results/mcnemar_chart.png)
+
+*Accuracy per category with Holm-adjusted McNemar significance. Under each label, +x/-y gives the ReAct-only and no-ReAct-only wins.*
+
+![Accuracy by category](results/accuracy_by_category.png)
+
+*Mean per-task accuracy per category and condition.*
+
 ## Where the gain comes from
 
 The gain is concentrated in categories that need live or computed information. Weather (1.00 vs 0.00), datetime (0.87 vs 0.03) and multi_tool (0.90 vs 0.20) are all significant after Holm correction. In weather and datetime the plain model cannot know the current conditions or date, and its baseline prompt tells it to say so, so these gaps measure access to tools rather than reasoning ability.
