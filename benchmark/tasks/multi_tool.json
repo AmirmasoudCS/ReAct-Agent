@@ -1,0 +1,264 @@
+[
+  {
+    "id": "mt_001",
+    "category": "multi_tool",
+    "question": "How many hours are there from now until the next Christmas Day (December 25)? Assume exactly 24 hours per day counted from today's date.",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 12,
+      "day": 25,
+      "factor": 24
+    },
+    "tools_expected": [
+      "datetime",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_002",
+    "category": "multi_tool",
+    "question": "The Eiffel Tower was completed in 1889. How many years ago was that? Compute it as the current year minus 1889.",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "year_diff",
+      "base": 1889
+    },
+    "tools_expected": [
+      "datetime",
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "mt_003",
+    "category": "multi_tool",
+    "question": "The University of Leipzig was founded in a certain year. How many years old is it? Compute it as the current year minus the founding year.",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "year_diff",
+      "base": 1409
+    },
+    "tools_expected": [
+      "datetime",
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "mt_004",
+    "category": "multi_tool",
+    "question": "Look up when the Chernobyl disaster happened. How many years ago was that? Compute it as the current year minus the event's year.",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "year_diff",
+      "base": 1986
+    },
+    "tools_expected": [
+      "datetime",
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "mt_005",
+    "category": "multi_tool",
+    "question": "Albert Einstein was born on 14 March 1879. How old would he be today if he were still alive (in full years)?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "full_years_since",
+      "year": 1879,
+      "month": 3,
+      "day": 14
+    },
+    "tools_expected": [
+      "datetime",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_006",
+    "category": "multi_tool",
+    "question": "The Berlin Wall fell on 9 November 1989. How many full years have passed since then?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "full_years_since",
+      "year": 1989,
+      "month": 11,
+      "day": 9
+    },
+    "tools_expected": [
+      "datetime",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_007",
+    "category": "multi_tool",
+    "question": "Look up the height of the Burj Khalifa in metres and convert it to feet (1 m = 3.28084 ft).",
+    "grader": "numeric",
+    "expected": 2716.536,
+    "tol": 5,
+    "tools_expected": [
+      "wikipedia_search",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_008",
+    "category": "multi_tool",
+    "question": "Look up the height of Mount Everest in metres and give half of that value.",
+    "grader": "numeric",
+    "expected": 4424.4,
+    "tol": 3,
+    "tools_expected": [
+      "wikipedia_search",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_009",
+    "category": "multi_tool",
+    "question": "Look up the atomic number of tungsten and square it.",
+    "grader": "numeric",
+    "expected": 5476,
+    "tol": 0.01,
+    "tools_expected": [
+      "wikipedia_search",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_010",
+    "category": "multi_tool",
+    "question": "Look up the year of the first modern Olympic Games. How many years after that year is the year 2100?",
+    "grader": "numeric",
+    "expected": 204,
+    "tol": 0.01,
+    "tools_expected": [
+      "wikipedia_search",
+      "calculator"
+    ]
+  },
+  {
+    "id": "mt_011",
+    "category": "multi_tool",
+    "question": "What is the current temperature in Berlin, converted to Fahrenheit?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_012",
+    "category": "multi_tool",
+    "question": "What is the weather in Paris right now, and what day of the week is it today?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather",
+      "datetime"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_013",
+    "category": "multi_tool",
+    "question": "Find the latest stable Python version and tell me how many days ago the first Python 3.0 final was released (3 December 2008).",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search",
+      "datetime",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_014",
+    "category": "multi_tool",
+    "question": "What is the temperature difference in °C between London and Sydney right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_015",
+    "category": "multi_tool",
+    "question": "Search the current Bitcoin price in USD and convert it to EUR using the current exchange rate.",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_016",
+    "category": "multi_tool",
+    "question": "Who won the most recent men's FIFA World Cup, and how many days ago was the final?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search",
+      "datetime",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_017",
+    "category": "multi_tool",
+    "question": "What is the latest iPhone model, and how many years ago was the very first iPhone released (look up its release year)?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search",
+      "wikipedia_search",
+      "datetime"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_018",
+    "category": "multi_tool",
+    "question": "Which is warmer right now, Cairo or Oslo, and what is the difference in °C?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_019",
+    "category": "multi_tool",
+    "question": "What is the weather in Tokyo today, and what is the date today?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather",
+      "datetime"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  },
+  {
+    "id": "mt_020",
+    "category": "multi_tool",
+    "question": "Look up Germany's latest population estimate online and compute how many people that is per square kilometre using Germany's area from Wikipedia.",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search",
+      "wikipedia_search",
+      "calculator"
+    ],
+    "rubric": "Correct only if ALL parts are answered, intermediate values are plausible and the final computation is consistent with them."
+  }
+]

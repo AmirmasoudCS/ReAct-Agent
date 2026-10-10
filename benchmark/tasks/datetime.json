@@ -1,0 +1,386 @@
+[
+  {
+    "id": "dt_001",
+    "category": "datetime",
+    "question": "What weekday will it be 100 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "weekday_plus",
+      "days": 100
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_002",
+    "category": "datetime",
+    "question": "What day of the week will it be 45 days from now?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "weekday_plus",
+      "days": 45
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_003",
+    "category": "datetime",
+    "question": "What day of the week will it be exactly 365 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "weekday_plus",
+      "days": 365
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_004",
+    "category": "datetime",
+    "question": "What weekday will it be 1000 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "weekday_plus",
+      "days": 1000
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_005",
+    "category": "datetime",
+    "question": "What weekday was it 90 days ago?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "weekday_plus",
+      "days": -90
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_006",
+    "category": "datetime",
+    "question": "What weekday will it be 500 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "weekday_plus",
+      "days": 500
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_007",
+    "category": "datetime",
+    "question": "What is the date 10 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": 10
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_008",
+    "category": "datetime",
+    "question": "What will the date be 45 days from now?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": 45
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_009",
+    "category": "datetime",
+    "question": "What is the date 100 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": 100
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_010",
+    "category": "datetime",
+    "question": "What was the date 30 days ago?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": -30
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_011",
+    "category": "datetime",
+    "question": "What is the date 200 days from today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": 200
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_012",
+    "category": "datetime",
+    "question": "What was the date exactly 365 days ago?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": -365
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_013",
+    "category": "datetime",
+    "question": "How many days are left until the next Christmas Day (December 25)?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 12,
+      "day": 25
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_014",
+    "category": "datetime",
+    "question": "How many days are there until the next New Year's Day (January 1)?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 1,
+      "day": 1
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_015",
+    "category": "datetime",
+    "question": "How many days until the next Halloween (October 31)?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 10,
+      "day": 31
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_016",
+    "category": "datetime",
+    "question": "How many days until the next Fourth of July?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 7,
+      "day": 4
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_017",
+    "category": "datetime",
+    "question": "How many days until the next German Unity Day (October 3)?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 10,
+      "day": 3
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_018",
+    "category": "datetime",
+    "question": "How many days until the next Valentine's Day (February 14)?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_until",
+      "month": 2,
+      "day": 14
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_019",
+    "category": "datetime",
+    "question": "What day of the year (1-366) is today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "day_of_year"
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_020",
+    "category": "datetime",
+    "question": "What year is it right now?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "current_year"
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_021",
+    "category": "datetime",
+    "question": "What month is it right now?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "current_month"
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_022",
+    "category": "datetime",
+    "question": "What day of the week is it today?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "current_weekday"
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_023",
+    "category": "datetime",
+    "question": "What is today's date?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "date_plus",
+      "days": 0
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_024",
+    "category": "datetime",
+    "question": "How many days have passed since January 1, 2000?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_since",
+      "year": 2000,
+      "month": 1,
+      "day": 1
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_025",
+    "category": "datetime",
+    "question": "How many days have passed since the Apollo 11 Moon landing on July 20, 1969?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_since",
+      "year": 1969,
+      "month": 7,
+      "day": 20
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_026",
+    "category": "datetime",
+    "question": "How many days have passed since March 11, 2020?",
+    "grader": "dynamic",
+    "expected": {
+      "fn": "days_since",
+      "year": 2020,
+      "month": 3,
+      "day": 11
+    },
+    "tools_expected": [
+      "datetime"
+    ]
+  },
+  {
+    "id": "dt_027",
+    "category": "datetime",
+    "question": "What day of the week was January 1, 2000?",
+    "grader": "regex",
+    "expected": "(?i)\\bSaturday\\b",
+    "tools_expected": [],
+    "notes": "Static calendar arithmetic; tool use optional."
+  },
+  {
+    "id": "dt_028",
+    "category": "datetime",
+    "question": "What day of the week was July 20, 1969?",
+    "grader": "regex",
+    "expected": "(?i)\\bSunday\\b",
+    "tools_expected": [],
+    "notes": "Static calendar arithmetic; tool use optional."
+  },
+  {
+    "id": "dt_029",
+    "category": "datetime",
+    "question": "How many days are there between March 1, 2024 and December 25, 2024?",
+    "grader": "numeric",
+    "expected": 299,
+    "tools_expected": [],
+    "notes": "Static calendar arithmetic; tool use optional.",
+    "tol": 0.01
+  },
+  {
+    "id": "dt_030",
+    "category": "datetime",
+    "question": "How many days are there between January 1, 2025 and December 31, 2025?",
+    "grader": "numeric",
+    "expected": 364,
+    "tools_expected": [],
+    "notes": "Static calendar arithmetic; tool use optional.",
+    "tol": 0.01
+  }
+]

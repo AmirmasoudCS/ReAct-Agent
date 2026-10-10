@@ -1,0 +1,222 @@
+[
+  {
+    "id": "wx_001",
+    "category": "weather",
+    "question": "What is the current temperature in Berlin?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_002",
+    "category": "weather",
+    "question": "Will I need an umbrella in London tomorrow?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_003",
+    "category": "weather",
+    "question": "What is the current wind speed in Chicago?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_004",
+    "category": "weather",
+    "question": "What is the current humidity in Tokyo?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_005",
+    "category": "weather",
+    "question": "What is the weather in Dresden right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_006",
+    "category": "weather",
+    "question": "What is the weather forecast for Paris this weekend?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_007",
+    "category": "weather",
+    "question": "Is it snowing in Oslo right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_008",
+    "category": "weather",
+    "question": "What is the current temperature in Sydney?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_009",
+    "category": "weather",
+    "question": "Which is warmer right now, Cairo or Oslo, and by how many degrees?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_010",
+    "category": "weather",
+    "question": "What is the 'feels like' temperature in Moscow right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_011",
+    "category": "weather",
+    "question": "Is it sunny in Madrid right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_012",
+    "category": "weather",
+    "question": "What is the highest temperature expected today in Rome?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_013",
+    "category": "weather",
+    "question": "What is the weather in Reykjavik right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_014",
+    "category": "weather",
+    "question": "What is the current temperature in New York in Fahrenheit?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_015",
+    "category": "weather",
+    "question": "Should I wear a jacket in Munich this evening?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_016",
+    "category": "weather",
+    "question": "What is the chance of rain in Amsterdam tomorrow?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_017",
+    "category": "weather",
+    "question": "What is the weather in Dubai right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_018",
+    "category": "weather",
+    "question": "What is the current temperature in Mumbai?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_019",
+    "category": "weather",
+    "question": "Is it windy in Wellington right now?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  },
+  {
+    "id": "wx_020",
+    "category": "weather",
+    "question": "What is the current weather in Leipzig?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "weather"
+    ],
+    "rubric": "Correct if it gives a concrete, plausible current/forecast value for the right place and answers the actual question (units correct). Incorrect if it refuses, hedges without data, or gives the wrong city/units."
+  }
+]

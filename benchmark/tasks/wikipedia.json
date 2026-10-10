@@ -1,0 +1,358 @@
+[
+  {
+    "id": "wiki_001",
+    "category": "wikipedia",
+    "question": "In what year was the University of Leipzig founded?",
+    "grader": "contains",
+    "expected": [
+      "1409"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_002",
+    "category": "wikipedia",
+    "question": "Who was the architect of the Frauenkirche in Dresden?",
+    "grader": "regex",
+    "expected": "(?i)b[aä]hr",
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_003",
+    "category": "wikipedia",
+    "question": "Which architect designed the Sydney Opera House?",
+    "grader": "contains",
+    "expected": [
+      "Utzon"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_004",
+    "category": "wikipedia",
+    "question": "What is the height of the Burj Khalifa in metres?",
+    "grader": "contains",
+    "expected": [
+      "828"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_005",
+    "category": "wikipedia",
+    "question": "In what year did Augustus the Strong, Elector of Saxony, die?",
+    "grader": "contains",
+    "expected": [
+      "1733"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_006",
+    "category": "wikipedia",
+    "question": "What is the capital of Bhutan?",
+    "grader": "contains",
+    "expected": [
+      "Thimphu"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_007",
+    "category": "wikipedia",
+    "question": "Who won the 1962 Nobel Prize in Physics?",
+    "grader": "contains",
+    "expected": [
+      "Landau"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_008",
+    "category": "wikipedia",
+    "question": "In what year did the Chernobyl disaster happen?",
+    "grader": "contains",
+    "expected": [
+      "1986"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_009",
+    "category": "wikipedia",
+    "question": "Who was the first Chancellor of the German Empire?",
+    "grader": "contains",
+    "expected": [
+      "Bismarck"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_010",
+    "category": "wikipedia",
+    "question": "Which city hosted the Battle of the Nations in 1813?",
+    "grader": "contains",
+    "expected": [
+      "Leipzig"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_011",
+    "category": "wikipedia",
+    "question": "Who wrote the novel 'The Master and Margarita'?",
+    "grader": "contains",
+    "expected": [
+      "Bulgakov"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_012",
+    "category": "wikipedia",
+    "question": "What is the atomic number of tungsten?",
+    "grader": "contains",
+    "expected": [
+      "74"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_013",
+    "category": "wikipedia",
+    "question": "What is the highest mountain in Africa?",
+    "grader": "contains",
+    "expected": [
+      "Kilimanjaro"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_014",
+    "category": "wikipedia",
+    "question": "Who composed 'The Rite of Spring'?",
+    "grader": "contains",
+    "expected": [
+      "Stravinsky"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_015",
+    "category": "wikipedia",
+    "question": "Who proved Fermat's Last Theorem?",
+    "grader": "contains",
+    "expected": [
+      "Wiles"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_016",
+    "category": "wikipedia",
+    "question": "In what year was the Peace of Westphalia signed?",
+    "grader": "contains",
+    "expected": [
+      "1648"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_017",
+    "category": "wikipedia",
+    "question": "What is the largest moon of Saturn?",
+    "grader": "contains",
+    "expected": [
+      "Titan"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_018",
+    "category": "wikipedia",
+    "question": "Who painted 'Guernica'?",
+    "grader": "contains",
+    "expected": [
+      "Picasso"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_019",
+    "category": "wikipedia",
+    "question": "In which city was Mozart born?",
+    "grader": "contains",
+    "expected": [
+      "Salzburg"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_020",
+    "category": "wikipedia",
+    "question": "Which Roman emperor ruled when Vesuvius erupted in 79 AD, destroying Pompeii?",
+    "grader": "contains",
+    "expected": [
+      "Titus"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_021",
+    "category": "wikipedia",
+    "question": "Who founded the Bauhaus school?",
+    "grader": "contains",
+    "expected": [
+      "Gropius"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_022",
+    "category": "wikipedia",
+    "question": "Which river flows through the city of Dresden?",
+    "grader": "contains",
+    "expected": [
+      "Elbe"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_023",
+    "category": "wikipedia",
+    "question": "Which country won the first FIFA World Cup in 1930?",
+    "grader": "contains",
+    "expected": [
+      "Uruguay"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_024",
+    "category": "wikipedia",
+    "question": "What is the capital of Burkina Faso?",
+    "grader": "contains",
+    "expected": [
+      "Ouagadougou"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_025",
+    "category": "wikipedia",
+    "question": "In what year were the first modern Olympic Games held?",
+    "grader": "contains",
+    "expected": [
+      "1896"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_026",
+    "category": "wikipedia",
+    "question": "Who discovered X-rays?",
+    "grader": "regex",
+    "expected": "(?i)r[oö]ntgen|roentgen",
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_027",
+    "category": "wikipedia",
+    "question": "Who wrote the drama 'Faust'?",
+    "grader": "contains",
+    "expected": [
+      "Goethe"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_028",
+    "category": "wikipedia",
+    "question": "In what year were euro banknotes and coins introduced into circulation?",
+    "grader": "contains",
+    "expected": [
+      "2002"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_029",
+    "category": "wikipedia",
+    "question": "What is the capital of the German state of Saxony?",
+    "grader": "contains",
+    "expected": [
+      "Dresden"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  },
+  {
+    "id": "wiki_030",
+    "category": "wikipedia",
+    "question": "Who is credited with inventing the World Wide Web?",
+    "grader": "contains",
+    "expected": [
+      "Berners"
+    ],
+    "tools_expected": [
+      "wikipedia_search"
+    ]
+  }
+]

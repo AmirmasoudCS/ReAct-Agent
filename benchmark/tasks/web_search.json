@@ -1,0 +1,236 @@
+[
+  {
+    "id": "ws_001",
+    "category": "web_search",
+    "question": "What is the URL of the official website of the German Bundestag?",
+    "grader": "contains",
+    "expected": [
+      "bundestag.de"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_002",
+    "category": "web_search",
+    "question": "What is the official website of Anthropic?",
+    "grader": "contains",
+    "expected": [
+      "anthropic.com"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_003",
+    "category": "web_search",
+    "question": "Who is the CEO of Nvidia?",
+    "grader": "contains",
+    "expected": [
+      "Huang"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_004",
+    "category": "web_search",
+    "question": "Who is the CEO of Microsoft?",
+    "grader": "contains",
+    "expected": [
+      "Nadella"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_005",
+    "category": "web_search",
+    "question": "Who is the Secretary-General of the United Nations?",
+    "grader": "contains",
+    "expected": [
+      "Guterres"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_006",
+    "category": "web_search",
+    "question": "Who is the President of the European Commission?",
+    "grader": "regex",
+    "expected": "(?i)von der leyen",
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_007",
+    "category": "web_search",
+    "question": "Who is the current President of France?",
+    "grader": "contains",
+    "expected": [
+      "Macron"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_008",
+    "category": "web_search",
+    "question": "Who is the current Chancellor of Germany?",
+    "grader": "contains",
+    "expected": [
+      "Merz"
+    ],
+    "tools_expected": [
+      "web_search"
+    ],
+    "notes": "Time-sensitive: re-verify the expected answer before each run."
+  },
+  {
+    "id": "ws_009",
+    "category": "web_search",
+    "question": "What is the latest stable version of Python?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_010",
+    "category": "web_search",
+    "question": "What is the top news headline today?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_011",
+    "category": "web_search",
+    "question": "Who won the most recent Nobel Prize in Physics?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_012",
+    "category": "web_search",
+    "question": "What is the current price of Bitcoin in USD?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_013",
+    "category": "web_search",
+    "question": "Who won the most recent Formula 1 Grand Prix?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_014",
+    "category": "web_search",
+    "question": "What is the latest iPhone model?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_015",
+    "category": "web_search",
+    "question": "What is the current EUR/USD exchange rate?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_016",
+    "category": "web_search",
+    "question": "Who won the most recent men's FIFA World Cup?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_017",
+    "category": "web_search",
+    "question": "What is the latest stable Linux kernel version?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_018",
+    "category": "web_search",
+    "question": "What is the current price of gold per troy ounce?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_019",
+    "category": "web_search",
+    "question": "What is the latest news about the German economy?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  },
+  {
+    "id": "ws_020",
+    "category": "web_search",
+    "question": "Which team currently leads the Bundesliga table?",
+    "grader": "human",
+    "expected": null,
+    "tools_expected": [
+      "web_search"
+    ],
+    "rubric": "Check the answer against a quick manual search at grading time. Correct if the concrete fact is current and right; incorrect if outdated, invented, or no concrete answer."
+  }
+]

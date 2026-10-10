@@ -1,0 +1,248 @@
+[
+  {
+    "id": "nt_001",
+    "category": "no_tool",
+    "question": "If all bloops are razzies and all razzies are lazzies, are all bloops lazzies?",
+    "grader": "regex",
+    "expected": "(?i)\\byes\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_002",
+    "category": "no_tool",
+    "question": "If 5 machines take 5 minutes to make 5 widgets, how long do 100 machines take to make 100 widgets?",
+    "grader": "regex",
+    "expected": "(?i)\\b5\\s*minutes?\\b|five minutes",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_003",
+    "category": "no_tool",
+    "question": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost?",
+    "grader": "regex",
+    "expected": "(?i)\\$?0?\\.05\\b|\\b5\\s*cents?\\b|five cents",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_004",
+    "category": "no_tool",
+    "question": "Which is heavier: 1 kg of feathers or 1 kg of steel?",
+    "grader": "regex",
+    "expected": "(?i)same|equal|neither",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_005",
+    "category": "no_tool",
+    "question": "Give one antonym of the word 'ancient'.",
+    "grader": "regex",
+    "expected": "(?i)modern|new|recent|contemporary",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_006",
+    "category": "no_tool",
+    "question": "What is the capital of France?",
+    "grader": "regex",
+    "expected": "(?i)paris",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_007",
+    "category": "no_tool",
+    "question": "How many sides does a hexagon have?",
+    "grader": "regex",
+    "expected": "(?i)\\b6\\b|six",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_008",
+    "category": "no_tool",
+    "question": "Translate 'good morning' into Spanish.",
+    "grader": "regex",
+    "expected": "(?i)buenos d[ií]as",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_009",
+    "category": "no_tool",
+    "question": "What is the plural of 'mouse' (the animal)?",
+    "grader": "regex",
+    "expected": "(?i)\\bmice\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_010",
+    "category": "no_tool",
+    "question": "What is the chemical formula of water?",
+    "grader": "regex",
+    "expected": "H2O|H₂O",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_011",
+    "category": "no_tool",
+    "question": "What is the past tense of the verb 'to go'?",
+    "grader": "regex",
+    "expected": "(?i)\\bwent\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_012",
+    "category": "no_tool",
+    "question": "All mammals are warm-blooded and whales are mammals. Are whales warm-blooded?",
+    "grader": "regex",
+    "expected": "(?i)\\byes\\b|are warm-blooded",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_013",
+    "category": "no_tool",
+    "question": "What number comes next: 2, 4, 8, 16, ...?",
+    "grader": "regex",
+    "expected": "\\b32\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_014",
+    "category": "no_tool",
+    "question": "How many days does a leap year have?",
+    "grader": "regex",
+    "expected": "\\b366\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_015",
+    "category": "no_tool",
+    "question": "Reply with exactly the word OK and nothing else.",
+    "grader": "regex",
+    "expected": "^\\s*OK\\.?\\s*$",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_016",
+    "category": "no_tool",
+    "question": "List exactly three fruits, comma separated, with no other text.",
+    "grader": "regex",
+    "expected": "^\\s*[A-Za-z]+,\\s*[A-Za-z]+,\\s*[A-Za-z]+\\.?\\s*$",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_017",
+    "category": "no_tool",
+    "question": "Name one of the three primary colours (red, yellow, blue).",
+    "grader": "regex",
+    "expected": "(?i)\\bred\\b|\\byellow\\b|\\bblue\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_018",
+    "category": "no_tool",
+    "question": "Is 17 a prime number?",
+    "grader": "regex",
+    "expected": "(?i)\\byes\\b|is (a )?prime",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_019",
+    "category": "no_tool",
+    "question": "Is 21 a prime number?",
+    "grader": "regex",
+    "expected": "(?i)\\bno\\b|\\bnot\\b|composite|isn't",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_020",
+    "category": "no_tool",
+    "question": "What does the word 'ubiquitous' mean?",
+    "grader": "regex",
+    "expected": "(?i)everywhere|omnipresent|widespread|all over|present",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_021",
+    "category": "no_tool",
+    "question": "Which planet is known as the Red Planet?",
+    "grader": "regex",
+    "expected": "(?i)\\bmars\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_022",
+    "category": "no_tool",
+    "question": "Correct the grammar: 'Me and him goes to school.'",
+    "grader": "regex",
+    "expected": "(?i)\\bhe and I go\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_023",
+    "category": "no_tool",
+    "question": "What is 12 + 15?",
+    "grader": "numeric",
+    "expected": 27,
+    "tol": 0.01,
+    "tools_expected": [],
+    "notes": "Trivial arithmetic: calculator use counts as unnecessary."
+  },
+  {
+    "id": "nt_024",
+    "category": "no_tool",
+    "question": "What is 9 times 8?",
+    "grader": "numeric",
+    "expected": 72,
+    "tol": 0.01,
+    "tools_expected": [],
+    "notes": "Trivial arithmetic: calculator use counts as unnecessary."
+  },
+  {
+    "id": "nt_025",
+    "category": "no_tool",
+    "question": "If today is Monday, what day of the week will it be in two days?",
+    "grader": "regex",
+    "expected": "(?i)wednesday",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_026",
+    "category": "no_tool",
+    "question": "A rectangle is 3 units wide and 4 units tall. How long is its diagonal?",
+    "grader": "numeric",
+    "expected": 5,
+    "tol": 0.01,
+    "tools_expected": []
+  },
+  {
+    "id": "nt_027",
+    "category": "no_tool",
+    "question": "What is the next letter in the sequence A, C, E, G, ...?",
+    "grader": "regex",
+    "expected": "\\bI\\b",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_028",
+    "category": "no_tool",
+    "question": "What is the boiling point of water at sea level in degrees Celsius?",
+    "grader": "numeric",
+    "expected": 100,
+    "tol": 0.01,
+    "tools_expected": []
+  },
+  {
+    "id": "nt_029",
+    "category": "no_tool",
+    "question": "In chess, which piece moves in an L-shape?",
+    "grader": "regex",
+    "expected": "(?i)knight",
+    "tools_expected": []
+  },
+  {
+    "id": "nt_030",
+    "category": "no_tool",
+    "question": "Reverse the word 'stressed'.",
+    "grader": "regex",
+    "expected": "(?i)desserts",
+    "tools_expected": []
+  }
+]

@@ -1,0 +1,332 @@
+[
+  {
+    "id": "calc_001",
+    "category": "calculator",
+    "question": "What is 18.5% of 2,340,000 plus 77?",
+    "grader": "numeric",
+    "expected": 432977.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_002",
+    "category": "calculator",
+    "question": "Compute 37 × 49 × 53.",
+    "grader": "numeric",
+    "expected": 96089,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_003",
+    "category": "calculator",
+    "question": "What is 123456789 × 987654321?",
+    "grader": "numeric",
+    "expected": 121932631112635269,
+    "tol": 0.5,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_004",
+    "category": "calculator",
+    "question": "What is 2 to the power of 40?",
+    "grader": "numeric",
+    "expected": 1099511627776,
+    "tol": 0.5,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_005",
+    "category": "calculator",
+    "question": "What is sqrt(2025) times sqrt(1764)?",
+    "grader": "numeric",
+    "expected": 1890.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_006",
+    "category": "calculator",
+    "question": "Compute (1250 + 3750) / 8 * 3.2.",
+    "grader": "numeric",
+    "expected": 2000.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_007",
+    "category": "calculator",
+    "question": "I invest 5000 euros at 4.5% annual interest, compounded yearly, for 10 years. What is the final amount, rounded to 2 decimals?",
+    "grader": "numeric",
+    "expected": 7764.847109,
+    "tol": 0.02,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_008",
+    "category": "calculator",
+    "question": "A restaurant bill is 86.40 and I add a 15% tip. What is the total?",
+    "grader": "numeric",
+    "expected": 99.36,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_009",
+    "category": "calculator",
+    "question": "What is 17 factorial?",
+    "grader": "numeric",
+    "expected": 355687428096000,
+    "tol": 0.5,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_010",
+    "category": "calculator",
+    "question": "What is the square root of 7 to 4 decimal places?",
+    "grader": "numeric",
+    "expected": 2.645751,
+    "tol": 0.0001,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_011",
+    "category": "calculator",
+    "question": "What is 3456 / 12 + 789 × 3?",
+    "grader": "numeric",
+    "expected": 2655.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_012",
+    "category": "calculator",
+    "question": "Convert 72 degrees Fahrenheit to Celsius, to 2 decimals.",
+    "grader": "numeric",
+    "expected": 22.222222,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_013",
+    "category": "calculator",
+    "question": "What is the average of 87, 93, 78, 85, 91 and 66, to 2 decimals?",
+    "grader": "numeric",
+    "expected": 83.333333,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_014",
+    "category": "calculator",
+    "question": "A price of 200 rises by 15% and then falls by 15%. What is the final price?",
+    "grader": "numeric",
+    "expected": 195.5,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_015",
+    "category": "calculator",
+    "question": "What is the remainder when 987654 is divided by 97?",
+    "grader": "numeric",
+    "expected": 0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_016",
+    "category": "calculator",
+    "question": "What is 1/7 to 6 decimal places?",
+    "grader": "numeric",
+    "expected": 0.142857,
+    "tol": 1e-06,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_017",
+    "category": "calculator",
+    "question": "What is the natural logarithm of 1000, to 4 decimals?",
+    "grader": "numeric",
+    "expected": 6.907755,
+    "tol": 0.0001,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_018",
+    "category": "calculator",
+    "question": "A train travels 312 km in 3 hours 45 minutes. What is its average speed in km/h?",
+    "grader": "numeric",
+    "expected": 83.2,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_019",
+    "category": "calculator",
+    "question": "What is the percentage change from 480 to 612?",
+    "grader": "numeric",
+    "expected": 27.5,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_020",
+    "category": "calculator",
+    "question": "What is the sum of all integers from 1 to 1000?",
+    "grader": "numeric",
+    "expected": 500500,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_021",
+    "category": "calculator",
+    "question": "What is 2.5% of 1,840,000?",
+    "grader": "numeric",
+    "expected": 46000.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_022",
+    "category": "calculator",
+    "question": "Compute (14.2 + 7.9) × (3.6 − 1.2).",
+    "grader": "numeric",
+    "expected": 53.04,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_023",
+    "category": "calculator",
+    "question": "What is 999999 squared?",
+    "grader": "numeric",
+    "expected": 999998000001,
+    "tol": 0.5,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_024",
+    "category": "calculator",
+    "question": "What is 7% of 1250 plus 13% of 3400?",
+    "grader": "numeric",
+    "expected": 529.5,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_025",
+    "category": "calculator",
+    "question": "What is the area of a circle with radius 13.7 cm, to 2 decimals?",
+    "grader": "numeric",
+    "expected": 589.645525,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_026",
+    "category": "calculator",
+    "question": "What is the cube root of 91125?",
+    "grader": "numeric",
+    "expected": 45.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_027",
+    "category": "calculator",
+    "question": "What is cos(60 degrees) multiplied by 84?",
+    "grader": "numeric",
+    "expected": 42.0,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_028",
+    "category": "calculator",
+    "question": "In how many ways can I choose 5 items from 12?",
+    "grader": "numeric",
+    "expected": 792,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_029",
+    "category": "calculator",
+    "question": "What is the 30th Fibonacci number, with F(1)=F(2)=1?",
+    "grader": "numeric",
+    "expected": 832040,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  },
+  {
+    "id": "calc_030",
+    "category": "calculator",
+    "question": "What is 1,000,000 divided by 37, rounded to 2 decimals?",
+    "grader": "numeric",
+    "expected": 27027.03,
+    "tol": 0.01,
+    "tools_expected": [
+      "calculator"
+    ]
+  }
+]
