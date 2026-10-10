@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from tools.datetime_tool import DateTimeTool
+from tools.datetime import DateTimeTool
 
 
 @pytest.fixture

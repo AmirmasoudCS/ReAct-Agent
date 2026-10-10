@@ -5,6 +5,7 @@ from rich.text import Text
 from agent import ReActAgent
 from llm.client import LLMClient
 from tools.calculator import CalculatorTool
+from tools.datetime import DateTimeTool
 from tools.wikipedia_search import WikipediaSearchTool
 from tools.web_search import WebSearchTool
 from tools.weather import WeatherTool
@@ -310,6 +311,7 @@ def main() -> None:
         # Register tools.
         tools = ToolRegistry()
         tools.register(CalculatorTool())
+        tools.register(DateTimeTool())
         tools.register(
             WikipediaSearchTool(timeout=config["tools"]["timeout"])
         )
