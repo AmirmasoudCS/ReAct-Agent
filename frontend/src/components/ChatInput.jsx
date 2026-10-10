@@ -1,8 +1,18 @@
 import { useRef, useState } from "react";
-import { ArrowUp, Paperclip } from "lucide-react";
+import { ArrowUp, Paperclip, Square } from "lucide-react";
 import "./ChatInput.css";
 
-export default function ChatInput({ onSend, disabled = false }) {
+/**
+ * isBusy: the agent is answering. The send button turns into a stop
+ * button, and sending is blocked (the typed text is kept).
+ * disabled: the whole input is unavailable (no session, offline, loading).
+ */
+export default function ChatInput({
+  onSend,
+  onStop,
+  isBusy = false,
+  disabled = false,
+}) {
   const [value, setValue] = useState("");
   const textareaRef = useRef(null);
 
@@ -11,7 +21,7 @@ export default function ChatInput({ onSend, disabled = false }) {
 
     const message = value.trim();
 
-    if (!message || disabled) {
+    if (!message || disabled || isBusy) {
       return;
     }
 
@@ -64,15 +74,27 @@ export default function ChatInput({ onSend, disabled = false }) {
             <Paperclip size={18} />
           </button>
 
-          <button
-            className="chat-input__send"
-            type="submit"
-            disabled={!value.trim() || disabled}
-            aria-label="Send message"
-            title="Send message"
-          >
-            <ArrowUp size={19} />
-          </button>
+          {isBusy ? (
+            <button
+              className="chat-input__stop"
+              type="button"
+              onClick={onStop}
+              aria-label="Stop response"
+              title="Stop response"
+            >
+              <Square size={14} fill="currentColor" />
+            </button>
+          ) : (
+            <button
+              className="chat-input__send"
+              type="submit"
+              disabled={!value.trim() || disabled}
+              aria-label="Send message"
+              title="Send message"
+            >
+              <ArrowUp size={19} />
+            </button>
+          )}
         </div>
       </form>
 
