@@ -2,10 +2,12 @@
 Condition and tool calls are hidden. Resume-safe: grades append to results/human_<rater>.jsonl.
 A second rater should grade ~20% (use --sample 0.2) for Cohen's kappa."""
 import argparse, json, random, pathlib, streamlit as st
-from tasks import load_tasks
+from task import load_tasks
+
+RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 
 p = argparse.ArgumentParser(); p.add_argument("--rater", default="rater1")
-p.add_argument("--sample", type=float, default=1.0); p.add_argument("--raw", default="results/raw.jsonl")
+p.add_argument("--sample", type=float, default=1.0); p.add_argument("--raw", default=str(RESULTS / "raw.jsonl"))
 a, _ = p.parse_known_args()
 
 key = lambda r: f"{r['task_id']}|{r['condition']}|{r['rep']}"
@@ -15,7 +17,7 @@ need = [r for r in rows if tasks[r["task_id"]]["grader"] == "human" and r["error
 need.sort(key=key); random.Random(42).shuffle(need)          # same blinded order for every rater
 if a.sample < 1: need = need[: int(len(need) * a.sample)]
 
-path = pathlib.Path(f"results/human_{a.rater}.jsonl")
+path = RESULTS / f"human_{a.rater}.jsonl"
 done = {json.loads(l)["key"] for l in path.open()} if path.exists() else set()
 todo = [r for r in need if key(r) not in done]
 st.caption(f"Rater: {a.rater}")
