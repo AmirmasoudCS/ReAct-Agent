@@ -70,3 +70,13 @@
   font-size: 0.8125rem;
   color: #d93025;
 }
+
+.chat-message__text--plain {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-message__actions {
+  margin-top: 4px;
+  margin-left: -8px;
+}
