@@ -1,0 +1,22 @@
+{
+  "started": "2026-10-10T15:43:15.573023",
+  "git": "1a7f4ac",
+  "k": 1,
+  "seed": 0,
+  "n_tasks": 180,
+  "settings": {
+    "model": "gemma4:e4b",
+    "temperature": 0.0,
+    "max_steps": 10,
+    "top_p": 0.9,
+    "stop": [
+      "PAUSE",
+      "Observation:"
+    ],
+    "max_output_tokens": 2048,
+    "tool_timeout": 15,
+    "request_timeout": 120.0,
+    "reasoning_effort": "none"
+  },
+  "mock": false
+}
