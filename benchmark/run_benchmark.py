@@ -1,4 +1,4 @@
-import argparse, json, random, time, pathlib, subprocess, datetime as dt
+import argparse, json, random, time, pathlib, subprocess, sys, datetime as dt
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FTimeout
 from task import load_tasks
 from graders import grade
@@ -27,6 +27,9 @@ def git_commit():
 
 
 def main(a):
+    for stream in (sys.stdout, sys.stderr):  # Windows consoles default to a legacy codepage
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     random.seed(a.seed)
     effective = {}
     if a.mock:
@@ -40,16 +43,16 @@ def main(a):
     out = pathlib.Path(a.out); out.parent.mkdir(parents=True, exist_ok=True)
     done = set()
     if out.exists():
-        for l in out.open():
+        for l in out.open(encoding="utf-8"):
             r = json.loads(l); done.add((r["task_id"], r["condition"], r["rep"]))
     jobs = [(t, c, r) for t in tasks for c in ("react", "no_react") for r in range(a.k)
             if (t["id"], c, r) not in done]
     random.shuffle(jobs)  # avoid order / time-of-day bias between conditions
     meta = {"started": dt.datetime.now().isoformat(), "git": git_commit(), "k": a.k, "seed": a.seed,
             "n_tasks": len(tasks), "settings": effective, "mock": a.mock}
-    (out.parent / "run_meta.json").write_text(json.dumps(meta, indent=2))
+    (out.parent / "run_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"{len(jobs)} runs to do ({len(done)} already done)")
-    with out.open("a") as f:
+    with out.open("a", encoding="utf-8") as f:
         for n, (t, cond, rep) in enumerate(jobs, 1):
             t0, err = time.time(), None
             ex = ThreadPoolExecutor(max_workers=1)  # fresh per job: a hung run can't block the next
