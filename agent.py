@@ -35,17 +35,31 @@ _ACTION_LINE_RE = re.compile(
     r"^[ \t]*Action[ \t]*:", re.IGNORECASE | re.MULTILINE
 )
 
+# A response that opens with one of these is ReAct output; anything else
+# is a plain conversational reply and can be streamed right away.
+_REACT_START_WORDS = ("thought", "action", "final answer", "pause")
+_REACT_START_RE = re.compile(
+    r"^(?:thought|action|final answer|pause)\b", re.IGNORECASE
+)
+# Lines that end a plain reply (the parser would treat them as ReAct).
+_STOP_LINE_RE = re.compile(
+    r"^[ \t]*(?:Thought[ \t]*:|Action[ \t]*:|PAUSE[ \t]*$)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 class _FinalAnswerStreamer:
-    """Find the final answer inside a growing model response.
+    """Find the user-visible answer inside a growing model response.
 
-    A ReAct response is only known to be an answer once the model writes
-    "Final Answer:" at the start of a line. Text before that point (the
-    thought, or a tool action) must never reach the user, so feed() returns
-    an empty string until the marker appears, then the text that follows it.
+    Two kinds of responses are streamed:
 
-    Plain replies with no ReAct marker at all are not streamed; they arrive
-    in one piece in the final event.
+    * ReAct answers: nothing is shown until "Final Answer:" appears at the
+      start of a line; then the text after it is streamed. A response with
+      an Action line before that marker is a tool call and is never shown.
+    * Plain replies: if the response does not open with a ReAct marker
+      (Thought / Action / Final Answer / PAUSE), it is a conversational
+      reply and is streamed from its first character. If a Thought, Action
+      or PAUSE line shows up later, streaming stops at that line.
     """
 
     _PARTIAL_MARKER_WINDOW = 12
@@ -54,6 +68,7 @@ class _FinalAnswerStreamer:
         self._raw = ""
         self._sent = 0
         self._started = False
+        self._plain = False
         self._emitted = False
         self._disabled = False
 
@@ -64,28 +79,64 @@ class _FinalAnswerStreamer:
     def flush(self) -> str:
         return self._emit(final=True)
 
+    def _detect_start(self, text: str, final: bool) -> bool:
+        """Decide whether visible text has begun. Returns True if so."""
+        stripped = text.lstrip()
+
+        if not stripped:
+            return False
+
+        lead = len(text) - len(stripped)
+
+        if _REACT_START_RE.match(stripped):
+            # ReAct output: wait for the Final Answer marker.
+            match = _FINAL_MARKER_RE.search(text)
+
+            if match is None:
+                return False
+
+            if _ACTION_LINE_RE.search(text, 0, match.start()):
+                self._disabled = True
+                return False
+
+            self._started = True
+            self._sent = match.end()
+            return True
+
+        # Could still turn into a marker word (e.g. "Thou" -> "Thought").
+        # Wait for a few more characters before deciding it is plain text.
+        lowered = stripped.lower()
+
+        if not final and any(
+            word.startswith(lowered) for word in _REACT_START_WORDS
+        ):
+            return False
+
+        self._started = True
+        self._plain = True
+        self._sent = lead
+        return True
+
     def _emit(self, final: bool) -> str:
         if self._disabled:
             return ""
 
         text = _CHANNEL_RE.sub("\n", self._raw)
 
-        if not self._started:
-            match = _FINAL_MARKER_RE.search(text)
-
-            if match is None:
-                return ""
-
-            # An Action line before the marker wins in parse_response, so
-            # this response is a tool call, not an answer.
-            if _ACTION_LINE_RE.search(text, 0, match.start()):
-                self._disabled = True
-                return ""
-
-            self._started = True
-            self._sent = match.end()
+        if not self._started and not self._detect_start(text, final):
+            return ""
 
         end = len(text.rstrip())
+
+        if self._plain:
+            stop = _STOP_LINE_RE.search(text, self._sent)
+
+            if stop is not None:
+                end = min(end, stop.start())
+                self._disabled = True
+                visible = text[self._sent:end].rstrip()
+                self._sent = max(self._sent, end)
+                return self._finish_visible(visible)
 
         if not final:
             # Hold back a possibly unfinished "<channel|>" marker.
@@ -104,6 +155,9 @@ class _FinalAnswerStreamer:
         visible = text[self._sent:end]
         self._sent = end
 
+        return self._finish_visible(visible)
+
+    def _finish_visible(self, visible: str) -> str:
         if not self._emitted:
             visible = visible.lstrip()
 
