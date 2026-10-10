@@ -34,6 +34,7 @@ class LLMClient:
         top_p: float = 0.9,
         stop: list[str] | None = None,
         max_output_tokens: int = 1024,
+        reasoning_effort: str | None = None,
     ) -> None:
         if max_output_tokens < 1:
             raise ValueError("max_output_tokens must be positive.")
@@ -45,6 +46,17 @@ class LLMClient:
         self.top_p = top_p
         self.stop = stop
         self.max_output_tokens = max_output_tokens
+
+        # Thinking models (such as gemma4) can put their whole answer in
+        # a separate "reasoning" field and leave the content empty.
+        # Ollama only turns thinking off when told reasoning_effort is
+        # "none". Set OLLAMA_REASONING_EFFORT to "low", "medium" or
+        # "high" to allow thinking, or to "default" to send nothing.
+        self.reasoning_effort = (
+            reasoning_effort
+            if reasoning_effort is not None
+            else os.getenv("OLLAMA_REASONING_EFFORT", "none")
+        )
 
         self.client = client or OpenAI(
             base_url=os.getenv(
@@ -103,6 +115,12 @@ class LLMClient:
 
         if stop_sequences:
             request["stop"] = stop_sequences
+
+        effort = (self.reasoning_effort or "").strip().lower()
+
+        if effort and effort != "default":
+            # extra_body works with every version of the OpenAI SDK.
+            request["extra_body"] = {"reasoning_effort": effort}
 
         return request
 
