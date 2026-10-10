@@ -1,7 +1,7 @@
 import { Bot, User } from "lucide-react";
 import "./ChatMessage.css";
 
-export default function ChatMessage({ message }) {
+export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
   const isUser = message.role === "user";
 
   return (
@@ -15,11 +15,15 @@ export default function ChatMessage({ message }) {
       </div>
 
       <div className="chat-message__content">
-        <span className="chat-message__role">
-          {isUser ? "You" : "ReAct Agent"}
-        </span>
+        <span className="chat-message__role">{isUser ? "You" : agentName}</span>
 
         <div className="chat-message__text">{message.content}</div>
+
+        {message.status === "failed" && (
+          <span className="chat-message__error" role="status">
+            Not sent. Check the connection and try again.
+          </span>
+        )}
       </div>
     </article>
   );
