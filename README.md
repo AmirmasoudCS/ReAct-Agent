@@ -8,6 +8,8 @@ The agent supports tool-assisted reasoning with a calculator, date and time util
 
 The web interface provides streaming responses, visible tool activity, and configurable model settings. The agent can also run through a command-line interface.
 
+A built-in [benchmark](#-benchmark-and-evaluation) compares the agent with the same model running without tools, using automatic and human grading and paired statistical tests.
+
 ## 🛠️ Tech Stack
 
 **Backend:** Python, FastAPI, Ollama, OpenAI Python SDK
@@ -228,11 +230,49 @@ Creates an optimized production build of the frontend, typically in the `fronten
 
 To run the application locally, start the backend and frontend as described above. The lint and build commands are optional development checks.
 
+## 📊 Benchmark and Evaluation
+
+The `benchmark/` folder contains a reproducible benchmark that compares the agent (ReAct loop with tools) against the same model answering without tools. It includes 180 tasks in seven categories (calculator, datetime, Wikipedia, weather, web search, multi-tool, and no-tool), automatic graders, a blinded human grading interface, and paired statistical tests (exact McNemar with Holm correction).
+
+### Running the Benchmark
+
+Make sure Ollama is running, then run these commands from the project root:
+
+```bash
+python benchmark/run_benchmark.py --k 1 --temperature 0    # run all tasks under both conditions
+streamlit run benchmark/human_eval.py -- --rater <name>    # grade the tasks that need human review
+python benchmark/analyze.py --rater <name>                 # accuracy table and report.md
+python benchmark/mcnemar.py --rater <name>                 # McNemar test for every category
+```
+
+Everything is saved in `benchmark/results/`, including the raw runs, human grades, run settings, tables, and charts. See [benchmark/README.md](benchmark/README.md) for the task format, grading rules, all command-line options, and how to interpret the statistics.
+
+### Results
+
+Accuracy of the full agent (ReAct) versus the plain model (no ReAct), with significance from McNemar's exact test after Holm correction across categories. The settings used for the run are stored in `benchmark/results/run_meta.json`.
+
+| Category   | ReAct | No ReAct | Significant |
+| ---------- | ----- | -------- | ----------- |
+| All tasks  | 0.91  | 0.49     | Yes (p < 0.001) |
+| Calculator | 0.97  | 0.73     | No          |
+| Datetime   | 0.87  | 0.03     | Yes (p < 0.001) |
+| Multi-tool | 0.90  | 0.20     | Yes (p < 0.01)  |
+| No-tool    | 1.00  | 0.90     | No          |
+| Weather    | 1.00  | 0.00     | Yes (p < 0.001) |
+| Web search | 0.60  | 0.40     | No          |
+| Wikipedia  | 0.97  | 0.87     | No          |
+
+![ReAct vs no-ReAct accuracy with McNemar significance](benchmark/results/mcnemar_chart.png)
+
+The agent is clearly better overall, mainly on tasks that need live or computed information. Categories marked "No" are not significant, which with only 20 to 30 tasks each does not mean there is no difference. The comparison is the full agent against the bare model, so the gain combines tool access, the ReAct format, and the system prompt. For the full discussion and caveats, see [benchmark/results.md](benchmark/results.md).
 
 ## 📂 Project Structure
 
 ```text
 📁
+├── 📁 benchmark
+│   ├── 📁 results
+│   └── 📁 tasks
 ├── 📁 frontend
 │   ├── 📁 public
 │   └── 📁 src
