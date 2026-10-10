@@ -8,7 +8,7 @@ llm:
     - "Observation:"
 
 agent:
-  max_steps: 6
+  max_steps: 10
 
 tools:
   timeout: 15
