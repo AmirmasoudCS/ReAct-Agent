@@ -13,9 +13,21 @@ export default function MessageList({
 }) {
   const endRef = useRef(null);
 
+  const lastMessage = messages[messages.length - 1];
+  const isStreaming = Boolean(lastMessage?.streaming);
+
+  // Show the "thinking" dots until answer text is actually flowing.
+  // This also covers the pauses between a tool result and the next step.
+  const showThinking =
+    isThinking && !(isStreaming && Boolean(lastMessage?.content));
+
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isThinking, showActivity]);
+    // Smooth scrolling restarts on every token and lags behind the text,
+    // so follow the stream instantly and animate only for new messages.
+    endRef.current?.scrollIntoView({
+      behavior: isStreaming ? "auto" : "smooth",
+    });
+  }, [messages, isThinking, showActivity, isStreaming]);
 
   return (
     <div className="chat-messages">
@@ -27,12 +39,13 @@ export default function MessageList({
             <ActivityPanel
               activity={message.activity}
               toolRenderers={toolRenderers}
+              live={Boolean(message.streaming)}
             />
           )}
         </div>
       ))}
 
-      {isThinking && (
+      {showThinking && (
         <div className="thinking-indicator">
           <div className="thinking-indicator__icon">
             <Bot size={18} />
