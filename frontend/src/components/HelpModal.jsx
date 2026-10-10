@@ -22,6 +22,11 @@ const TOOLS = [
     description: "Current conditions and forecasts for up to 7 days.",
     example: "Weather in Berlin for the next three days",
   },
+  {
+    name: "datetime",
+    description: "Current date, time and day of the week in any timezone.",
+    example: "What time is it in Tokyo right now?",
+  },
 ];
 
 export default function HelpModal({ onClose }) {
