@@ -5,6 +5,7 @@ import "./ChatMessage.css";
 
 export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
   const isUser = message.role === "user";
+  const hasText = Boolean(message.content);
 
   return (
     <article
@@ -24,12 +25,21 @@ export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
             {message.content}
           </div>
         ) : (
-          <div className="chat-message__text">
-            <MarkdownContent>{message.content}</MarkdownContent>
-          </div>
+          (hasText || message.streaming) && (
+            <div
+              className={`chat-message__text ${
+                message.streaming ? "chat-message__text--streaming" : ""
+              }`}
+            >
+              {hasText && <MarkdownContent>{message.content}</MarkdownContent>}
+              {message.streaming && (
+                <span className="chat-message__cursor" aria-hidden="true" />
+              )}
+            </div>
+          )
         )}
 
-        {!isUser && (
+        {!isUser && hasText && !message.streaming && (
           <div className="chat-message__actions">
             <CopyButton text={message.content} label="Copy answer" />
           </div>
@@ -38,6 +48,12 @@ export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
         {message.status === "failed" && (
           <span className="chat-message__error" role="status">
             Not sent. Check the connection and try again.
+          </span>
+        )}
+
+        {message.interrupted && (
+          <span className="chat-message__error" role="status">
+            The response was interrupted.
           </span>
         )}
       </div>
