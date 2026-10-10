@@ -11,6 +11,10 @@ Rules:
   documentation, general web research, and when Wikipedia is
   insufficient or does not contain the needed information.
 - Use weather for current weather conditions and forecasts.
+- Use datetime for the current date, time, or day of the week. Never
+  guess the current date or time from your own knowledge.
+- For datetime, "timezone" is optional and must be an IANA name such as
+  "Europe/Berlin". Omit it to get the server's local time.
 - Use calculator for arithmetic.
 - Do not use wikipedia_search to calculate geographic distances.
 - Only use tools listed above.
@@ -60,6 +64,14 @@ Action: weather: {{"location": "Berlin", "days": 3, "units": "celsius"}}
 PAUSE
 Observation: Weather for Berlin, Germany ...
 Final Answer: [Summarize the relevant weather conditions and forecast from the observation.]
+
+Example 3:
+Question: What time is it in Tokyo right now?
+Thought: I need the current time in the Asia/Tokyo timezone.
+Action: datetime: {{"timezone": "Asia/Tokyo"}}
+PAUSE
+Observation: Current date and time ...
+Final Answer: [State the time and date from the observation.]
 """
 
 
