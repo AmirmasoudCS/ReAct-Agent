@@ -1,5 +1,6 @@
-
 import os
+from collections.abc import Iterator
+from typing import Any
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -48,13 +49,13 @@ class LLMClient:
             api_key=os.getenv("OLLAMA_API_KEY", "ollama"),
         )
 
-    def generate_response(
+    def _build_request(
         self,
         system_prompt: str,
         messages: list[Message],
-        max_tokens: int | None = None,
-    ) -> str:
-        """Send a prompt and conversation history to Ollama."""
+        max_tokens: int | None,
+    ) -> dict[str, Any]:
+        """Build the chat-completion request shared by both call styles."""
         output_limit = (
             self.max_output_tokens if max_tokens is None else max_tokens
         )
@@ -80,7 +81,7 @@ class LLMClient:
                 "content": message.content,
             })
 
-        request = {
+        request: dict[str, Any] = {
             "model": self.model,
             "messages": conversation,
             "temperature": self.temperature,
@@ -91,6 +92,17 @@ class LLMClient:
         if self.stop:
             request["stop"] = self.stop
 
+        return request
+
+    def generate_response(
+        self,
+        system_prompt: str,
+        messages: list[Message],
+        max_tokens: int | None = None,
+    ) -> str:
+        """Send a prompt and conversation history to Ollama."""
+        request = self._build_request(system_prompt, messages, max_tokens)
+
         response = self.client.chat.completions.create(**request)
 
         content = response.choices[0].message.content
@@ -99,3 +111,32 @@ class LLMClient:
             raise ValueError("The model returned an empty response.")
 
         return content.strip()
+
+    def stream_response(
+        self,
+        system_prompt: str,
+        messages: list[Message],
+        max_tokens: int | None = None,
+    ) -> Iterator[str]:
+        """Yield the model's response as text fragments as they arrive."""
+        request = self._build_request(system_prompt, messages, max_tokens)
+        request["stream"] = True
+
+        stream = self.client.chat.completions.create(**request)
+
+        try:
+            for chunk in stream:
+                if not chunk.choices:
+                    continue
+
+                delta = chunk.choices[0].delta.content
+
+                if delta:
+                    yield delta
+        finally:
+            # Runs when the stream ends AND when the consumer stops early,
+            # so the connection to Ollama is released either way.
+            close = getattr(stream, "close", None)
+
+            if callable(close):
+                close()
