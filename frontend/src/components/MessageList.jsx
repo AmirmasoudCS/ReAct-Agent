@@ -1,4 +1,3 @@
-import "./MessageList.css";
 import { useEffect, useRef } from "react";
 import { Bot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
@@ -9,7 +8,7 @@ export default function MessageList({
   isThinking = false,
   showActivity = false,
   agentName = "ReAct Agent",
-  activityRenderers,
+  toolRenderers,
 }) {
   const endRef = useRef(null);
 
@@ -26,7 +25,7 @@ export default function MessageList({
           {showActivity && message.role === "assistant" && (
             <ActivityPanel
               activity={message.activity}
-              renderers={activityRenderers}
+              toolRenderers={toolRenderers}
             />
           )}
         </div>
