@@ -1,4 +1,6 @@
 import { Bot, User } from "lucide-react";
+import MarkdownContent from "./MarkdownContent";
+import CopyButton from "./CopyButton";
 import "./ChatMessage.css";
 
 export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
@@ -17,7 +19,21 @@ export default function ChatMessage({ message, agentName = "ReAct Agent" }) {
       <div className="chat-message__content">
         <span className="chat-message__role">{isUser ? "You" : agentName}</span>
 
-        <div className="chat-message__text">{message.content}</div>
+        {isUser ? (
+          <div className="chat-message__text chat-message__text--plain">
+            {message.content}
+          </div>
+        ) : (
+          <div className="chat-message__text">
+            <MarkdownContent>{message.content}</MarkdownContent>
+          </div>
+        )}
+
+        {!isUser && (
+          <div className="chat-message__actions">
+            <CopyButton text={message.content} label="Copy answer" />
+          </div>
+        )}
 
         {message.status === "failed" && (
           <span className="chat-message__error" role="status">
