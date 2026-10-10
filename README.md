@@ -10,6 +10,27 @@ The web interface provides streaming responses, visible tool activity, and confi
 
 A built-in [benchmark](#-benchmark-and-evaluation) compares the agent with the same model running without tools, using automatic and human grading and paired statistical tests.
 
+## 🖥️ Screenshots
+
+<div align="center">
+  <div>
+    <img src="assets/screenshots/thinking.png"
+         alt="ReAct Agent processing a user question"
+         width="49%" />
+    <p><strong>Thinking and tool execution</strong><br />
+    The agent receives a question and displays its in-progress
+    state while it works toward an answer.</p>
+  </div>
+  <div>
+    <img src="assets/screenshots/final_answer.png"
+         alt="ReAct Agent final answer and tool activity"
+         width="49%" />
+    <p><strong>Final answer and activity log</strong><br />
+    The completed response is shown alongside the tools the
+    agent used, making its actions easy to inspect.</p>
+  </div>
+</div>
+
 ## 🛠️ Tech Stack
 
 **Backend:** Python, FastAPI, Ollama, OpenAI Python SDK
