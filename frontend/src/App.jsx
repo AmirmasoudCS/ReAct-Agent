@@ -17,7 +17,7 @@ const api = createAgentApi(createHttpClient(API_BASE_URL));
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
-  const [showActivity, setShowActivity] = useState(false);
+  const [showActivity, setShowActivity] = usePersistentState("showActivity", true);
 
   const {
     sessions,
