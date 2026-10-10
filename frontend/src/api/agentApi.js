@@ -33,6 +33,10 @@ export function createAgentApi(http) {
     createSession: async (name) =>
       normalizeSession(await http.post("/sessions", name ? { name } : {})),
 
+    renameSession: (id, name) => http.patch(sessionPath(id), { name }),
+
+    deleteSession: (id) => http.delete(sessionPath(id)),
+
     sendMessage: async (id, content) => {
       const result = await http.post(`${sessionPath(id)}/messages`, {
         content,
@@ -46,8 +50,9 @@ export function createAgentApi(http) {
     },
 
     // Streams the agent's steps. onEvent receives each raw event:
-    //   token, action, observation, final, error, done.
+    //   token, action, observation, final, error, title, done.
     // Resolves with the same shape as sendMessage once "done" arrives.
+    // Aborting the signal rejects with an AbortError.
     streamMessage: async (id, content, { onEvent, signal } = {}) => {
       let done = null;
 
