@@ -1,0 +1,141 @@
+.markdown {
+  /* Markdown output contains newline text nodes between blocks; make sure a
+     parent's white-space: pre-wrap cannot turn them into blank lines. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown blockquote {
+  margin: 0 0 0.9em;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  margin: 1.3em 0 0.5em;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+.markdown h1 { font-size: 1.4em; }
+.markdown h2 { font-size: 1.25em; }
+.markdown h3 { font-size: 1.1em; }
+.markdown h4 { font-size: 1em; }
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.5em;
+}
+
+.markdown li + li {
+  margin-top: 0.25em;
+}
+
+.markdown li > p {
+  margin: 0;
+}
+
+.markdown a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown blockquote {
+  margin-left: 0;
+  padding-left: 1em;
+  border-left: 3px solid rgba(128, 128, 128, 0.5);
+  opacity: 0.85;
+}
+
+.markdown hr {
+  margin: 1.2em 0;
+  border: 0;
+  border-top: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.markdown img {
+  max-width: 100%;
+}
+
+/* Inline code only; fenced blocks are styled under .code-block. */
+.markdown :not(pre) > code {
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  background: rgba(128, 128, 128, 0.18);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+/* Tables */
+.markdown__table-wrap {
+  margin: 0 0 0.9em;
+  overflow-x: auto;
+}
+
+.markdown table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.markdown th,
+.markdown td {
+  padding: 0.45em 0.75em;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  text-align: left;
+}
+
+.markdown th {
+  background: rgba(128, 128, 128, 0.12);
+  font-weight: 600;
+}
+
+/* Fenced code blocks */
+.code-block {
+  margin: 0 0 0.9em;
+  overflow: hidden;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 8px;
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+.code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 4px 14px;
+  background: #161b22;
+  color: #9da7b3;
+  font-size: 0.8rem;
+}
+
+.code-block pre {
+  margin: 0;
+  overflow-x: auto;
+}
+
+.code-block pre code.hljs {
+  display: block;
+  padding: 14px;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  white-space: pre;
+}
