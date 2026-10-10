@@ -203,3 +203,134 @@
   font: inherit;
   font-weight: 600;
 }
+
+.chat-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.activity-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color, #dedee5);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.activity-toggle:hover {
+  background: var(--hover-background, #f3f3f6);
+}
+
+.activity-toggle--active {
+  border-color: var(--accent-color, #8b5cf6);
+  background: var(--accent-background, #f3eefe);
+  color: var(--accent-color, #7c3aed);
+}
+
+.chat-message-group {
+  width: 100%;
+}
+
+.message-activity {
+  margin: 4px 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color, #dedee5);
+  border-radius: 10px;
+  background: var(--activity-background, #f8f8fa);
+  font-size: 0.875rem;
+}
+
+.message-activity__heading {
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--text-color, #333340);
+}
+
+.message-activity__items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.message-activity__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.message-activity__marker {
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: var(--accent-color, #8b5cf6);
+}
+
+.message-activity__item--observation .message-activity__marker {
+  background: #16a34a;
+}
+
+.message-activity__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-activity__label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.75;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+}
+
+.message-activity__body p {
+  margin: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.message-activity__tool {
+  font-weight: 600;
+}
+
+.message-activity__code {
+  max-width: 100%;
+  margin: 6px 0 0;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: var(--code-background, #ededf2);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+  .chat-header__actions {
+    gap: 8px;
+  }
+
+  .activity-toggle {
+    padding: 7px;
+  }
+
+  .message-activity {
+    padding: 10px;
+  }
+}
