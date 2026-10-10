@@ -44,10 +44,6 @@ benchmark/
 
 ## 3. Setup
 
-```bash
-pip install pandas scipy statsmodels matplotlib scikit-learn streamlit
-```
-
 Run every command **from the project root** (so `config.yaml` and the package imports resolve):
 
 ```bash
