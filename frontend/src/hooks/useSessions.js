@@ -3,7 +3,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * Owns the session list, the active session, and backend connectivity.
  * Receives the API object as an argument, so it works with any backend
- * that implements: health, listSessions, getSession, createSession.
+ * that implements: health, listSessions, getSession, createSession,
+ * renameSession, deleteSession.
+ *
+ * The backend returns sessions newest-created first; new sessions are
+ * added at the top, so the list stays in that order.
  */
 export function useSessions(api) {
   const [sessions, setSessions] = useState([]);
@@ -48,6 +52,7 @@ export function useSessions(api) {
       setConnectionStatus("connected");
       setSessions(saved.map((session) => ({ ...session, messages: [] })));
 
+      // Resume the conversation used most recently.
       const latest = [...saved].sort(
         (a, b) => new Date(b.updated_at) - new Date(a.updated_at),
       )[0];
@@ -127,6 +132,61 @@ export function useSessions(api) {
     [api, patchSession, reportError],
   );
 
+  // Resolves to true on success. On failure the reason is shown through
+  // `error` (for example "A session named 'X' already exists.").
+  const renameSession = useCallback(
+    async (id, name) => {
+      const trimmed = name.trim();
+
+      if (!trimmed) {
+        return false;
+      }
+
+      setError("");
+
+      try {
+        const result = await api.renameSession(id, trimmed);
+
+        patchSession(id, { name: result.name, updated_at: result.updated_at });
+        return true;
+      } catch (requestError) {
+        reportError("Could not rename this conversation.", requestError);
+        return false;
+      }
+    },
+    [api, patchSession, reportError],
+  );
+
+  // Removes the session. If it was the open one, the next session in the
+  // list (the newest remaining) is opened, or the chat is emptied.
+  const deleteSession = useCallback(
+    async (id) => {
+      setError("");
+
+      try {
+        await api.deleteSession(id);
+      } catch (requestError) {
+        reportError("Could not delete this conversation.", requestError);
+        return false;
+      }
+
+      const remaining = sessions.filter((session) => session.id !== id);
+
+      setSessions(remaining);
+
+      if (id === activeSessionId) {
+        if (remaining.length > 0) {
+          await selectSession(remaining[0].id);
+        } else {
+          setActiveSessionId(null);
+        }
+      }
+
+      return true;
+    },
+    [api, sessions, activeSessionId, selectSession, reportError],
+  );
+
   const activeSession =
     sessions.find((session) => session.id === activeSessionId) ?? null;
 
@@ -142,6 +202,8 @@ export function useSessions(api) {
     patchSession,
     createSession,
     selectSession,
+    renameSession,
+    deleteSession,
     reload,
   };
 }
