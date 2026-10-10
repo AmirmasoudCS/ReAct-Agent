@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError, available_timezones
 
 from tools.base import BaseTool
 
@@ -63,6 +63,12 @@ class DateTimeTool(BaseTool):
             try:
                 tz = ZoneInfo(timezone.strip())
             except (ZoneInfoNotFoundError, ValueError, OSError):
+                if not available_timezones():
+                    return (
+                        "Error: the server has no timezone database "
+                        "installed. Install it with: pip install tzdata."
+                    )
+
                 return (
                     f"Error: unknown timezone '{timezone.strip()}'. "
                     "Use an IANA name such as 'Europe/Berlin'."
