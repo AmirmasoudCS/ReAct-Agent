@@ -54,18 +54,23 @@ Run every command **from the project root** (so `config.yaml` and the package im
 python benchmark/task.py        # sanity check: lists categories, counts, auto vs human
 ```
 
-### Configure the adapter (one-time)
+### Settings
 
-Open `benchmark/adapter.py` and fix the two functions marked `TODO`:
+`adapter.py` is already wired to this project (`LLMClient`, the five tools, `ReActAgent`). Settings are
+read from **`config.yaml`** (model, temperature, `top_p`, stop sequences, `max_output_tokens`,
+`agent.max_steps`, tool timeout) and **not** from `settings.json`, which stores UI tweaks and would
+make runs depend on whatever was last clicked in the frontend. Override per run with
+`--model`, `--temperature`, `--max-steps`. The effective settings (including the reasoning effort)
+are printed at start and saved in `results/run_meta.json`.
 
-- `build_llm()` should construct the `LLMClient` exactly as `main.py`/`api.py` does. **Set the
-  temperature here** (use 0 for the primary run).
-- `build_tools()` should return a `ToolRegistry` with all tools registered.
-
-Also set `MAX_STEPS` (the ReAct step budget) and report it with your results.
-Tool names in `tools_expected` are assumed to be `calculator`, `datetime`, `weather`,
-`web_search`, `wikipedia_search`. They must match the names in your registry, because they are
-compared against the `tool_name` values the agent emits.
+Notes on how the conditions are built:
+- `react` uses `ReActAgent` with **no `ContextManager`** (single-turn runs do not need compaction).
+- `no_react` calls `generate_response(..., stop=[])`. The client's default stop sequences
+  (`PAUSE`, `Observation:`) are disabled, otherwise they could truncate plain answers.
+- Both conditions share the same `top_p`, `max_output_tokens` and reasoning effort
+  (`OLLAMA_REASONING_EFFORT`, default `none`).
+- Each model call has a 120 s HTTP timeout, and each run a `--timeout` (default 180 s) wall-clock limit.
+- Tool names must match the registry: `calculator`, `datetime`, `weather`, `web_search`, `wikipedia_search`.
 
 ## 4. Running
 
@@ -73,16 +78,19 @@ compared against the `tool_name` values the agent emits.
 # Pipeline test without your agent (fake answers; numbers are meaningless)
 python benchmark/run_benchmark.py --mock --k 1 --out /tmp/mock/raw.jsonl
 
-# Small real smoke test
-python benchmark/run_benchmark.py --categories calculator --k 1 --model-tag my-model --temperature 0
+# Small real smoke test (check results/raw.jsonl afterwards)
+python benchmark/run_benchmark.py --categories calculator no_tool --k 1 --temperature 0
 
 # Full runs
-python benchmark/run_benchmark.py --k 1 --model-tag my-model --temperature 0    # deterministic pass
-python benchmark/run_benchmark.py --k 5 --model-tag my-model --out benchmark/results/raw_t07.jsonl  # stochastic pass
+python benchmark/run_benchmark.py --k 1 --temperature 0                                          # deterministic pass
+python benchmark/run_benchmark.py --k 5 --out benchmark/results/raw_t02.jsonl                    # stochastic pass (config temperature)
 ```
 
 Options: `--k` repetitions per task and condition, `--seed` for job order, `--categories` to
-restrict, `--timeout` seconds per run (default 180), `--out` output file, `--mock`.
+restrict, `--model`, `--temperature`, `--max-steps` (override `config.yaml`), `--timeout` seconds per
+run (default 180), `--out` output file, `--mock`.
+
+Use a separate `--out` file for each configuration. `analyze.py --raw <file>` analyses one file at a time.
 
 Properties of the runner:
 - **Resume-safe**: re-running skips `(task, condition, rep)` triples already in the output file.
@@ -176,26 +184,38 @@ Reading the results:
 
 ## 8. Reproducibility checklist
 
-- Record model, temperature, `MAX_STEPS`, `k`, seed (all in `run_meta.json`; edit the model tag via `--model-tag`).
+- Model, temperature, max steps, top_p, stop sequences, reasoning effort, `k`, seed and git commit are all in `run_meta.json`.
 - Run both conditions in the same session; the runner interleaves them randomly.
 - Live tools (weather/search) change over time. Grade promptly, or log tool outputs and replay them.
 - Keep `raw.jsonl` and the `human_*.jsonl` files together with the report.
 - Use a clean checkout (the git commit is stored in `run_meta.json`).
 
-## 9. Failure analysis (recommended for the write-up)
+## 9. What the comparison does and does not show
+
+`react` is the **whole agent** (ReAct loop + tools + a long, rule-heavy system prompt) and `no_react` is
+the **bare model** with a short prompt. The measured difference therefore bundles three things: tool
+access, the ReAct reasoning format, and the prompt's routing rules (for example "never guess the
+current date"). It answers "does the agent beat the bare model?", not "does the Thought/Action format
+itself help?". To isolate the format you would add a third condition, such as tools without the ReAct
+format (native function calling), or ReAct with all tools but a minimal prompt. Also note that
+`no_react` is told to say so when it cannot know something, so on live-data tasks it fails honestly
+instead of guessing. State this choice in the write-up.
+
+## 10. Failure analysis (recommended for the write-up)
 
 `raw.jsonl` keeps `error`, `tool_calls` and `steps`, so you can categorise failures per condition:
 wrong tool chosen, tool never called when needed, unnecessary tool call, repeated invalid format,
 max steps reached, wrong final computation, timeout. A short table of these usually explains the
 accuracy differences better than the p-values.
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `NotImplementedError` / import error in `adapter.py` | Fix the `TODO` builders so they match `main.py`. |
-| All `react` rows have `error: ...maximum number of steps` | Increase `MAX_STEPS`, or inspect the tool/prompt. |
-| `no_react` answers contain strange prefixes | The adapter strips `<channel|>` markers; extend `_clean()` if your model emits other markers. |
+| Connection errors / all rows fail | Is Ollama running and the model pulled? Check `OLLAMA_BASE_URL`. |
+| Many `react` rows have `error: ...maximum number of steps` | Raise `--max-steps`, or inspect the traces of those rows. |
+| Many empty answers | Thinking models can leave `content` empty; check `OLLAMA_REASONING_EFFORT` and `max_output_tokens`. |
+| `no_react` answers contain strange prefixes | The adapter strips `<channel|>` markers; extend `_clean()` for other markers. |
 | `datetime` tasks all wrong for both conditions | Check the machine clock/timezone and that the datetime tool returns today's date. |
 | `ModuleNotFoundError: task` | Run scripts from the project root as shown (`python benchmark/...`). |
 | Human UI shows nothing to grade | No human-graded rows in `raw.jsonl` yet, or all are graded. |
