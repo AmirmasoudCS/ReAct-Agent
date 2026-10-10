@@ -63,3 +63,14 @@ def test_invalid_json(tool):
 
 def test_input_must_be_object(tool):
     assert tool.execute("[1, 2]") == "Error: input must be a JSON object."
+
+
+def test_missing_timezone_database(tool, monkeypatch):
+    monkeypatch.setattr(
+        "tools.datetime_tool.available_timezones",
+        lambda: set(),
+    )
+
+    result = tool.execute('{"timezone": "Mars/Olympus"}')
+
+    assert "pip install tzdata" in result
