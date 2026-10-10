@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime, timezone
 
 import pytest
@@ -66,8 +67,10 @@ def test_input_must_be_object(tool):
 
 
 def test_missing_timezone_database(tool, monkeypatch):
+    # Patch the module that defines the tool, whatever its file is named.
     monkeypatch.setattr(
-        "tools.datetime_tool.available_timezones",
+        sys.modules[DateTimeTool.__module__],
+        "available_timezones",
         lambda: set(),
     )
 
