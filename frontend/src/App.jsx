@@ -10,6 +10,7 @@ import { createAgentApi } from "./api/agentApi";
 import { useSessions } from "./hooks/useSessions";
 import { useChat } from "./hooks/useChat";
 import "./App.css";
+import { usePersistentState } from "./hooks/usePersistentState";
 
 // Created once, outside the component, so hooks get a stable reference.
 const api = createAgentApi(createHttpClient(API_BASE_URL));
