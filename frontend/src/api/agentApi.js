@@ -44,5 +44,33 @@ export function createAgentApi(http) {
         answer: result.answer,
       };
     },
+
+    // Streams the agent's steps. onEvent receives each raw event:
+    //   token, action, observation, final, error, done.
+    // Resolves with the same shape as sendMessage once "done" arrives.
+    streamMessage: async (id, content, { onEvent, signal } = {}) => {
+      let done = null;
+
+      await http.stream(`${sessionPath(id)}/messages/stream`, {
+        body: { content },
+        signal,
+        onEvent: (event) => {
+          if (event.type === "done") {
+            done = {
+              session: event.session,
+              messages: normalizeMessages(event.messages),
+              answer: event.answer,
+            };
+          }
+          onEvent?.(event);
+        },
+      });
+
+      if (!done) {
+        throw new Error("The response ended before it completed.");
+      }
+
+      return done;
+    },
   };
 }
