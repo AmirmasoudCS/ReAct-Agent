@@ -95,9 +95,10 @@ def build_agent(session: dict[str, Any]) -> ReActAgent:
 
 def get_display_messages(
     messages: list[dict[str, str]],
-) -> list[dict[str, str]]:
-    """Convert the internal ReAct transcript into chat messages."""
-    display_messages = []
+) -> list[dict[str, Any]]:
+    """Convert the internal transcript into user-facing messages."""
+    display_messages: list[dict[str, Any]] = []
+    pending_activity: list[dict[str, str]] = []
 
     for message in messages:
         role = message["role"]
@@ -107,6 +108,17 @@ def get_display_messages(
             display_messages.append({
                 "role": "user",
                 "content": content,
+            })
+            pending_activity = []
+
+        elif role == "observation":
+            observation = content.removeprefix(
+                "Observation: "
+            ).strip()
+
+            pending_activity.append({
+                "type": "observation",
+                "content": observation,
             })
 
         elif role == "assistant":
@@ -119,6 +131,20 @@ def get_display_messages(
                 display_messages.append({
                     "role": "assistant",
                     "content": parsed.content,
+                    "activity": pending_activity,
+                })
+                pending_activity = []
+
+            else:
+                # Do not expose the model's raw Thought text.
+                pending_activity.append({
+                    "type": "planning",
+                    "content": "The agent is deciding how to proceed.",
+                })
+                pending_activity.append({
+                    "type": "action",
+                    "tool_name": parsed.tool_name or "Unknown tool",
+                    "tool_input": str(parsed.tool_input or ""),
                 })
 
     return display_messages
