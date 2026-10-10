@@ -49,8 +49,9 @@ class WeatherTool(BaseTool):
         "for a city or location using Open-Meteo. "
         'Input JSON: {"location": "Berlin", "days": 3, '
         '"units": "celsius"}. '
-        "Location is required. Days is optional and must be "
-        "an integer from 1 to 7, defaulting to 1. "
+        "Location is required and should be a city name. Days is "
+        "optional and must be an integer from 1 to 7, defaulting to 1 "
+        "(today only). Use 2 to include tomorrow. "
         'Units is optional: "celsius" or "fahrenheit". '
         "Defaults to celsius. Returns temperatures, conditions, "
         "precipitation, wind, and sunrise/sunset when available."
@@ -120,6 +121,22 @@ class WeatherTool(BaseTool):
             raise ValueError("Missing location coordinates.")
 
         return result
+
+    def _find_place(self, location: str) -> dict | None:
+        """Look up a place, retrying with only the part before a comma.
+
+        The geocoder matches place names, not addresses, so
+        "Yate, Gloucestershire, England" finds nothing but "Yate" does.
+        """
+        place = self._get_location(location)
+
+        if place is None and "," in location:
+            first_part = location.split(",")[0].strip()
+
+            if first_part:
+                place = self._get_location(first_part)
+
+        return place
 
     def _get_forecast(
         self,
@@ -359,7 +376,7 @@ class WeatherTool(BaseTool):
             )
 
         try:
-            place = self._get_location(location.strip())
+            place = self._find_place(location.strip())
 
             if place is None:
                 return (
