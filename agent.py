@@ -26,6 +26,21 @@ from utils.react_parser import parse_response
 # Every run ends with exactly one "final" or one "error" event.
 AgentEvent = dict[str, Any]
 
+# How many invalid or empty responses in a row the agent tolerates.
+# The counter resets after every valid response.
+MAX_FORMAT_RETRIES = 2
+
+INVALID_FORMAT_INSTRUCTION = (
+    "Your response format was invalid. Answer with "
+    "'Final Answer: ...' or use the required Action "
+    "format. Do not explain the instructions."
+)
+EMPTY_RESPONSE_INSTRUCTION = (
+    "Your last response was empty. Read the latest Observation and "
+    "reply with either 'Final Answer: ...' or one new "
+    "'Thought:' and 'Action:' followed by PAUSE."
+)
+
 # Same markers utils.react_parser understands (kept private to this module).
 _CHANNEL_RE = re.compile(r"<\s*channel\s*\|\s*>", re.IGNORECASE)
 _FINAL_MARKER_RE = re.compile(
@@ -228,6 +243,10 @@ class ReActAgent:
         With stream_tokens=True the final answer is also yielded as "token"
         events while the model writes it. With stream_tokens=False the model
         is called without streaming and only step events are produced.
+
+        An empty or badly formatted response is retried (up to
+        MAX_FORMAT_RETRIES times in a row). Once a retry succeeds, the
+        failed attempts are removed from the history.
         """
         if not user_input or not user_input.strip():
             raise ValueError("User input cannot be empty.")
@@ -238,6 +257,8 @@ class ReActAgent:
         self.messages.append(Message("user", user_input.strip()))
 
         format_retries = 0
+        # Index of the first message added by the current retry streak.
+        retry_start: int | None = None
 
         for _ in range(self.max_steps):
             context_prompt, context_messages = self._build_context(
@@ -275,33 +296,67 @@ class ReActAgent:
                 )
 
             print_debug(response)
-            self.messages.append(Message("assistant", response))
 
-            try:
-                parsed = parse_response(response)
-            except ValueError as error:
-                print_error(str(error))
+            is_empty = not response.strip()
+            parsed = None
+            error_text = ""
 
-                if format_retries >= 1:
-                    yield {
-                        "type": "error",
-                        "message": (
+            if is_empty:
+                # An empty reply is never stored: an empty assistant turn
+                # in the history makes the next reply empty as well.
+                error_text = "The model returned an empty response."
+            else:
+                self.messages.append(Message("assistant", response))
+
+                try:
+                    parsed = parse_response(response)
+                except ValueError as error:
+                    error_text = str(error)
+
+            if parsed is None:
+                print_error(error_text)
+
+                if format_retries >= MAX_FORMAT_RETRIES:
+                    if is_empty:
+                        message = (
+                            "Error: the model repeatedly returned an "
+                            "empty response. Try a larger output limit "
+                            "or a different model."
+                        )
+                    else:
+                        message = (
                             "Error: the model repeatedly returned an "
                             "invalid response. Try adjusting the prompt."
-                        ),
-                    }
+                        )
+
+                    yield {"type": "error", "message": message}
                     return
+
+                if retry_start is None:
+                    retry_start = len(self.messages) - (
+                        0 if is_empty else 1
+                    )
 
                 format_retries += 1
                 self.messages.append(
                     Message(
                         "agent_instruction",
-                        "Your response format was invalid. Answer with "
-                        "'Final Answer: ...' or use the required Action "
-                        "format. Do not explain the instructions.",
+                        EMPTY_RESPONSE_INSTRUCTION
+                        if is_empty
+                        else INVALID_FORMAT_INSTRUCTION,
                     )
                 )
                 continue
+
+            # A valid response ends the retry streak. Drop the failed
+            # attempts so they are not sent to the model again.
+            if retry_start is not None:
+                valid_message = self.messages.pop()
+                del self.messages[retry_start:]
+                self.messages.append(valid_message)
+                retry_start = None
+
+            format_retries = 0
 
             if parsed.kind == "final":
                 yield {
