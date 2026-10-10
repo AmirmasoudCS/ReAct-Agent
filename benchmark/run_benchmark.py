@@ -1,7 +1,7 @@
 import argparse, json, random, time, pathlib, subprocess, sys, datetime as dt
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FTimeout
-from task import load_tasks
-from graders import grade
+from benchmark.task import load_tasks
+from benchmark.graders import grade
 
 RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 

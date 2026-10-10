@@ -18,7 +18,7 @@ import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from scipy.stats import binom
 from statsmodels.stats.contingency_tables import mcnemar
 from statsmodels.stats.multitest import multipletests
-from task import load_tasks
+from benchmark.task import load_tasks
 
 RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 ap = argparse.ArgumentParser()

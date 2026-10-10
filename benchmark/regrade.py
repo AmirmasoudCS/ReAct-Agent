@@ -8,8 +8,8 @@ Time-relative tasks are graded against each row's own `run_date`, so results sta
 A backup is written to <file>.bak first. Rows with a run error stay incorrect.
 """
 import argparse, datetime as dt, json, pathlib, shutil
-from task import load_tasks
-from graders import grade
+from benchmark.task import load_tasks
+from benchmark.graders import grade
 
 RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 ap = argparse.ArgumentParser()

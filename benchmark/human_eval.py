@@ -2,7 +2,7 @@
 Condition and tool calls are hidden. Resume-safe: grades append to results/human_<rater>.jsonl.
 A second rater should grade ~20% (use --sample 0.2) for Cohen's kappa."""
 import argparse, json, random, pathlib, streamlit as st
-from task import load_tasks
+from benchmark.task import load_tasks
 
 RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 
