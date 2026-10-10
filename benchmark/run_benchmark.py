@@ -1,7 +1,9 @@
 import argparse, json, random, time, pathlib, subprocess, datetime as dt
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FTimeout
-from tasks import load_tasks
+from task import load_tasks
 from graders import grade
+
+RESULTS = pathlib.Path(__file__).resolve().parent / "results"
 
 
 def mock_agent(task, use_react):
@@ -57,6 +59,8 @@ def main(a):
                 res, err = None, f"{type(e).__name__}: {e}"
             if res is None:  # errors/timeouts count as INCORRECT, never dropped
                 res = {"answer": "", "tool_calls": [], "steps": 0}
+            elif res.get("error"):  # agent-level failure (format error, max steps, ...)
+                err = res["error"]
             row = {"task_id": t["id"], "category": t["category"], "condition": cond, "rep": rep,
                    "answer": res["answer"], "tool_calls": res["tool_calls"], "steps": res["steps"],
                    "latency": round(time.time() - t0, 3), "error": err,
@@ -68,7 +72,7 @@ def main(a):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--out", default="results/raw.jsonl")
+    p.add_argument("--out", default=str(RESULTS / "raw.jsonl"))
     p.add_argument("--k", type=int, default=3)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--categories", nargs="*", default=None)
