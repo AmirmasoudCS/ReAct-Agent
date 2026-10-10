@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Bot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ActivityPanel from "./ActivityPanel";
+import "./MessageList.css";
 
 export default function MessageList({
   messages,
