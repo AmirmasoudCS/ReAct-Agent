@@ -4,6 +4,8 @@ import ChatHeader from "./components/ChatHeader";
 import ChatWelcome from "./components/ChatWelcome";
 import MessageList from "./components/MessageList";
 import ChatInput from "./components/ChatInput";
+import SettingsModal from "./components/SettingsModal";
+import HelpModal from "./components/HelpModal";
 import { API_BASE_URL, APP_NAME } from "./config";
 import { createHttpClient } from "./api/httpClient";
 import { createAgentApi } from "./api/agentApi";
@@ -17,6 +19,8 @@ const api = createAgentApi(createHttpClient(API_BASE_URL));
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [showActivity, setShowActivity] = usePersistentState("showActivity", true);
 
   const {
@@ -54,6 +58,8 @@ export default function App() {
         onSelectSession={selectSession}
         onRenameSession={renameSession}
         onDeleteSession={deleteSession}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenHelp={() => setHelpOpen(true)}
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((current) => !current)}
         isLoadingSessions={isLoading}
@@ -105,6 +111,12 @@ export default function App() {
           />
         </footer>
       </main>
+
+      {settingsOpen && (
+        <SettingsModal api={api} onClose={() => setSettingsOpen(false)} />
+      )}
+
+      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
     </div>
   );
 }
