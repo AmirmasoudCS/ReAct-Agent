@@ -1,0 +1,36 @@
+"""Blinded human grading.  streamlit run human_eval.py -- --rater alice
+Condition and tool calls are hidden. Resume-safe: grades append to results/human_<rater>.jsonl.
+A second rater should grade ~20% (use --sample 0.2) for Cohen's kappa."""
+import argparse, json, random, pathlib, streamlit as st
+from tasks import load_tasks
+
+p = argparse.ArgumentParser(); p.add_argument("--rater", default="rater1")
+p.add_argument("--sample", type=float, default=1.0); p.add_argument("--raw", default="results/raw.jsonl")
+a, _ = p.parse_known_args()
+
+key = lambda r: f"{r['task_id']}|{r['condition']}|{r['rep']}"
+tasks = {t["id"]: t for t in load_tasks()}
+rows = [json.loads(l) for l in open(a.raw)]
+need = [r for r in rows if tasks[r["task_id"]]["grader"] == "human" and r["error"] is None]
+need.sort(key=key); random.Random(42).shuffle(need)          # same blinded order for every rater
+if a.sample < 1: need = need[: int(len(need) * a.sample)]
+
+path = pathlib.Path(f"results/human_{a.rater}.jsonl")
+done = {json.loads(l)["key"] for l in path.open()} if path.exists() else set()
+todo = [r for r in need if key(r) not in done]
+st.caption(f"Rater: {a.rater}")
+st.progress(1 - len(todo) / max(1, len(need)), text=f"{len(need)-len(todo)}/{len(need)} graded")
+if not todo:
+    st.success("All graded."); st.stop()
+
+r = todo[0]; t = tasks[r["task_id"]]
+st.subheader(t["question"])
+st.info(f"Rubric: {t.get('rubric','')}")
+st.markdown(r["answer"] or "_(empty answer)_")
+
+def save(v):
+    with path.open("a") as f: f.write(json.dumps({"key": key(r), "correct": v}) + "\n")
+    st.rerun()
+c1, c2 = st.columns(2)
+if c1.button("✅ Correct", use_container_width=True): save(True)
+if c2.button("❌ Incorrect", use_container_width=True): save(False)
