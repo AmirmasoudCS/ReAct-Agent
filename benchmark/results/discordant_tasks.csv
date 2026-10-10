@@ -1,0 +1,85 @@
+category,task_id,winner,react_acc,no_react_acc,question
+calculator,calc_001,react,1.0,0.0,"What is 18.5% of 2,340,000 plus 77?"
+calculator,calc_002,react,1.0,0.0,Compute 37 × 49 × 53.
+calculator,calc_007,react,1.0,0.0,"I invest 5000 euros at 4.5% annual interest, compounded yearly, for 10 years. What is the final amount, rounded to 2 decimals?"
+calculator,calc_013,react,1.0,0.0,"What is the average of 87, 93, 78, 85, 91 and 66, to 2 decimals?"
+calculator,calc_014,react,1.0,0.0,A price of 200 rises by 15% and then falls by 15%. What is the final price?
+calculator,calc_015,react,1.0,0.0,What is the remainder when 987654 is divided by 97?
+calculator,calc_019,react,1.0,0.0,What is the percentage change from 480 to 612?
+calculator,calc_025,react,1.0,0.0,"What is the area of a circle with radius 13.7 cm, to 2 decimals?"
+calculator,calc_029,no_react,0.0,1.0,"What is the 30th Fibonacci number, with F(1)=F(2)=1?"
+datetime,dt_001,react,1.0,0.0,What weekday will it be 100 days from today?
+datetime,dt_002,react,1.0,0.0,What day of the week will it be 45 days from now?
+datetime,dt_003,react,1.0,0.0,What day of the week will it be exactly 365 days from today?
+datetime,dt_004,react,1.0,0.0,What weekday will it be 1000 days from today?
+datetime,dt_005,react,1.0,0.0,What weekday was it 90 days ago?
+datetime,dt_006,react,1.0,0.0,What weekday will it be 500 days from today?
+datetime,dt_007,react,1.0,0.0,What is the date 10 days from today?
+datetime,dt_008,react,1.0,0.0,What will the date be 45 days from now?
+datetime,dt_009,react,1.0,0.0,What is the date 100 days from today?
+datetime,dt_010,react,1.0,0.0,What was the date 30 days ago?
+datetime,dt_011,react,1.0,0.0,What is the date 200 days from today?
+datetime,dt_012,react,1.0,0.0,What was the date exactly 365 days ago?
+datetime,dt_013,react,1.0,0.0,How many days are left until the next Christmas Day (December 25)?
+datetime,dt_014,react,1.0,0.0,How many days are there until the next New Year's Day (January 1)?
+datetime,dt_015,react,1.0,0.0,How many days until the next Halloween (October 31)?
+datetime,dt_016,react,1.0,0.0,How many days until the next Fourth of July?
+datetime,dt_017,react,1.0,0.0,How many days until the next German Unity Day (October 3)?
+datetime,dt_018,react,1.0,0.0,How many days until the next Valentine's Day (February 14)?
+datetime,dt_019,react,1.0,0.0,What day of the year (1-366) is today?
+datetime,dt_020,react,1.0,0.0,What year is it right now?
+datetime,dt_021,react,1.0,0.0,What month is it right now?
+datetime,dt_022,react,1.0,0.0,What day of the week is it today?
+datetime,dt_023,react,1.0,0.0,What is today's date?
+datetime,dt_025,react,1.0,0.0,"How many days have passed since the Apollo 11 Moon landing on July 20, 1969?"
+datetime,dt_026,react,1.0,0.0,"How many days have passed since March 11, 2020?"
+multi_tool,mt_001,react,1.0,0.0,How many hours are there from now until the next Christmas Day (December 25)? Assume exactly 24 hours per day counted from today's date.
+multi_tool,mt_002,react,1.0,0.0,The Eiffel Tower was completed in 1889. How many years ago was that? Compute it as the current year minus 1889.
+multi_tool,mt_003,react,1.0,0.0,The University of Leipzig was founded in a certain year. How many years old is it? Compute it as the current year minus the founding year.
+multi_tool,mt_004,react,1.0,0.0,Look up when the Chernobyl disaster happened. How many years ago was that? Compute it as the current year minus the event's year.
+multi_tool,mt_005,react,1.0,0.0,Albert Einstein was born on 14 March 1879. How old would he be today if he were still alive (in full years)?
+multi_tool,mt_006,react,1.0,0.0,The Berlin Wall fell on 9 November 1989. How many full years have passed since then?
+multi_tool,mt_007,no_react,0.0,1.0,Look up the height of the Burj Khalifa in metres and convert it to feet (1 m = 3.28084 ft).
+multi_tool,mt_011,react,1.0,0.0,"What is the current temperature in Berlin, converted to Fahrenheit?"
+multi_tool,mt_012,react,1.0,0.0,"What is the weather in Paris right now, and what day of the week is it today?"
+multi_tool,mt_013,react,1.0,0.0,Find the latest stable Python version and tell me how many days ago the first Python 3.0 final was released (3 December 2008).
+multi_tool,mt_014,react,1.0,0.0,What is the temperature difference in °C between London and Sydney right now?
+multi_tool,mt_015,react,1.0,0.0,Search the current Bitcoin price in USD and convert it to EUR using the current exchange rate.
+multi_tool,mt_017,react,1.0,0.0,"What is the latest iPhone model, and how many years ago was the very first iPhone released (look up its release year)?"
+multi_tool,mt_018,react,1.0,0.0,"Which is warmer right now, Cairo or Oslo, and what is the difference in °C?"
+multi_tool,mt_019,react,1.0,0.0,"What is the weather in Tokyo today, and what is the date today?"
+multi_tool,mt_020,react,1.0,0.0,Look up Germany's latest population estimate online and compute how many people that is per square kilometre using Germany's area from Wikipedia.
+no_tool,nt_002,react,1.0,0.0,"If 5 machines take 5 minutes to make 5 widgets, how long do 100 machines take to make 100 widgets?"
+no_tool,nt_003,react,1.0,0.0,A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost?
+no_tool,nt_010,react,1.0,0.0,What is the chemical formula of water?
+weather,wx_001,react,1.0,0.0,What is the current temperature in Berlin?
+weather,wx_002,react,1.0,0.0,Will I need an umbrella in London tomorrow?
+weather,wx_003,react,1.0,0.0,What is the current wind speed in Chicago?
+weather,wx_004,react,1.0,0.0,What is the current humidity in Tokyo?
+weather,wx_005,react,1.0,0.0,What is the weather in Dresden right now?
+weather,wx_006,react,1.0,0.0,What is the weather forecast for Paris this weekend?
+weather,wx_007,react,1.0,0.0,Is it snowing in Oslo right now?
+weather,wx_008,react,1.0,0.0,What is the current temperature in Sydney?
+weather,wx_009,react,1.0,0.0,"Which is warmer right now, Cairo or Oslo, and by how many degrees?"
+weather,wx_010,react,1.0,0.0,What is the 'feels like' temperature in Moscow right now?
+weather,wx_011,react,1.0,0.0,Is it sunny in Madrid right now?
+weather,wx_012,react,1.0,0.0,What is the highest temperature expected today in Rome?
+weather,wx_013,react,1.0,0.0,What is the weather in Reykjavik right now?
+weather,wx_014,react,1.0,0.0,What is the current temperature in New York in Fahrenheit?
+weather,wx_015,react,1.0,0.0,Should I wear a jacket in Munich this evening?
+weather,wx_016,react,1.0,0.0,What is the chance of rain in Amsterdam tomorrow?
+weather,wx_017,react,1.0,0.0,What is the weather in Dubai right now?
+weather,wx_018,react,1.0,0.0,What is the current temperature in Mumbai?
+weather,wx_019,react,1.0,0.0,Is it windy in Wellington right now?
+weather,wx_020,react,1.0,0.0,What is the current weather in Leipzig?
+web_search,ws_001,no_react,0.0,1.0,What is the URL of the official website of the German Bundestag?
+web_search,ws_008,react,1.0,0.0,Who is the current Chancellor of Germany?
+web_search,ws_009,react,1.0,0.0,What is the latest stable version of Python?
+web_search,ws_010,react,1.0,0.0,What is the top news headline today?
+web_search,ws_013,react,1.0,0.0,Who won the most recent Formula 1 Grand Prix?
+web_search,ws_014,react,1.0,0.0,What is the latest iPhone model?
+wikipedia,wiki_004,react,1.0,0.0,What is the height of the Burj Khalifa in metres?
+wikipedia,wiki_005,no_react,0.0,1.0,"In what year did Augustus the Strong, Elector of Saxony, die?"
+wikipedia,wiki_007,react,1.0,0.0,Who won the 1962 Nobel Prize in Physics?
+wikipedia,wiki_010,react,1.0,0.0,Which city hosted the Battle of the Nations in 1813?
+wikipedia,wiki_020,react,1.0,0.0,"Which Roman emperor ruled when Vesuvius erupted in 79 AD, destroying Pompeii?"
