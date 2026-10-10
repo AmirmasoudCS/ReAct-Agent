@@ -37,6 +37,12 @@ export function createAgentApi(http) {
 
     deleteSession: (id) => http.delete(sessionPath(id)),
 
+    getSettings: () => http.get("/settings"),
+
+    updateSettings: (changes) => http.patch("/settings", changes),
+
+    listModels: () => http.get("/models"),
+
     sendMessage: async (id, content) => {
       const result = await http.post(`${sessionPath(id)}/messages`, {
         content,
