@@ -109,6 +109,21 @@ class UpdateSettingsRequest(BaseModel):
     max_steps: int | None = None
 
 
+def get_document_store(session_id: str) -> DocumentStore:
+    """Documents live inside the session's own directory."""
+    return DocumentStore(session_manager.sessions_dir / session_id)
+
+
+def serialize_document(meta: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": meta["id"],
+        "name": meta["name"],
+        "chunk_count": meta["chunk_count"],
+        "pages": meta.get("pages"),
+        "size_bytes": meta.get("size_bytes", 0),
+        "uploaded_at": meta.get("uploaded_at"),
+    }
+
 def build_agent(session: dict[str, Any]) -> ReActAgent:
     """Build an agent using the saved transcript for a session."""
     settings = get_settings()
