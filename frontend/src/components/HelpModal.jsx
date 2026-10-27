@@ -18,6 +18,11 @@ const TOOLS = [
     example: "What are the latest Python release notes?",
   },
   {
+    name: "arxiv_search",
+    description: "Recent research papers from arXiv, with authors, dates, links and abstracts.",
+    example: "Find recent papers on retrieval augmented generation",
+  },
+  {
     name: "weather",
     description: "Current conditions and forecasts for up to 7 days.",
     example: "Weather in Berlin for the next three days",
