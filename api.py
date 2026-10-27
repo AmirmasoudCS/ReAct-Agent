@@ -535,6 +535,150 @@ def delete_session(session_id: str) -> Response:
     return Response(status_code=204)
 
 
+@app.get("/api/sessions/{session_id}/documents")
+def list_documents(session_id: str) -> list[dict[str, Any]]:
+    session = load_session_or_raise(session_id)
+    store = get_document_store(session["session_id"])
+
+    return [serialize_document(item) for item in store.list_documents()]
+
+
+@app.post("/api/sessions/{session_id}/documents", status_code=201)
+def upload_document(
+    session_id: str,
+    file: UploadFile = File(...),
+) -> dict[str, Any]:
+    doc_config = config["documents"]
+    session = load_session_or_raise(session_id)
+    resolved_id = session["session_id"]
+    lock = get_session_lock(resolved_id)
+
+    # Held for the whole upload, so the conversation cannot be deleted or
+    # answered while the document is still being indexed.
+    if not lock.acquire(blocking=False):
+        raise HTTPException(status_code=409, detail=BUSY_MESSAGE)
+
+    try:
+        store = get_document_store(resolved_id)
+        existing = store.list_documents()
+        max_files = doc_config["max_files_per_session"]
+
+        if len(existing) >= max_files:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    f"This conversation already has {max_files} documents. "
+                    "Remove one first."
+                ),
+            )
+
+        max_mb = doc_config["max_file_mb"]
+        max_bytes = int(max_mb * 1024 * 1024)
+        data = file.file.read(max_bytes + 1)
+
+        if not data:
+            raise HTTPException(status_code=422, detail="The file is empty.")
+
+        if len(data) > max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"The file is larger than {max_mb} MB.",
+            )
+
+        name = clean_filename(file.filename or "document")
+
+        if any(item["name"].casefold() == name.casefold() for item in existing):
+            raise HTTPException(
+                status_code=409,
+                detail=f"'{name}' is already uploaded. Remove it first.",
+            )
+
+        try:
+            sections = extract_sections(name, data)
+            chunks = chunk_sections(
+                sections,
+                chunk_chars=doc_config["chunk_chars"],
+                overlap=doc_config["chunk_overlap"],
+            )
+        except DocumentError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+
+        if not chunks:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "No readable text was found. Scanned PDFs and images "
+                    "need OCR, which is not supported."
+                ),
+            )
+
+        max_chunks = doc_config["max_chunks_per_file"]
+
+        if len(chunks) > max_chunks:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"The document is too long ({len(chunks)} sections, "
+                    f"limit {max_chunks}). Split it into smaller files."
+                ),
+            )
+
+        embedding_model = doc_config["embedding_model"]
+        prefix = doc_config["document_prefix"]
+
+        try:
+            llm = LLMClient(model=get_settings()["model"])
+            vectors = embed_in_batches(
+                lambda batch: llm.embed(batch, model=embedding_model),
+                [prefix + chunk.text for chunk in chunks],
+            )
+        except Exception as error:
+            print(f"Could not embed document: {error}")
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Could not create embeddings. Is Ollama running and is "
+                    f"'{embedding_model}' installed? "
+                    f"Try: ollama pull {embedding_model}"
+                ),
+            ) from error
+
+        meta = store.add(
+            name,
+            chunks,
+            vectors,
+            embedding_model,
+            size_bytes=len(data),
+            pages=max((c.page for c in chunks if c.page), default=None),
+        )
+    finally:
+        lock.release()
+
+    return serialize_document(meta)
+
+
+@app.delete(
+    "/api/sessions/{session_id}/documents/{document_id}",
+    status_code=204,
+)
+def delete_document(session_id: str, document_id: str) -> Response:
+    session = load_session_or_raise(session_id)
+    resolved_id = session["session_id"]
+    lock = get_session_lock(resolved_id)
+
+    if not lock.acquire(blocking=False):
+        raise HTTPException(status_code=409, detail=BUSY_MESSAGE)
+
+    try:
+        removed = get_document_store(resolved_id).remove(document_id)
+    finally:
+        lock.release()
+
+    if not removed:
+        raise HTTPException(status_code=404, detail="Document not found.")
+
+    return Response(status_code=204)
+
 @app.post("/api/sessions/{session_id}/messages")
 def send_message(
     session_id: str,
