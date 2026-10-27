@@ -6,6 +6,7 @@ import MessageList from "./components/MessageList";
 import ChatInput from "./components/ChatInput";
 import SettingsModal from "./components/SettingsModal";
 import HelpModal from "./components/HelpModal";
+import ArxivResults from "./components/ArxivResults";
 import { API_BASE_URL, APP_NAME } from "./config";
 import { createHttpClient } from "./api/httpClient";
 import { createAgentApi } from "./api/agentApi";
@@ -16,6 +17,11 @@ import { usePersistentState } from "./hooks/usePersistentState";
 
 // Created once, outside the component, so hooks get a stable reference.
 const api = createAgentApi(createHttpClient(API_BASE_URL));
+
+// Custom result views, keyed by lowercase tool name.
+const toolRenderers = {
+  arxiv_search: (step) => <ArxivResults text={step.result} />,
+};
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -94,6 +100,7 @@ export default function App() {
               isThinking={isThinking}
               showActivity={showActivity}
               agentName={APP_NAME}
+              toolRenderers={toolRenderers}
             />
           )}
         </section>
