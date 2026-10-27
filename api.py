@@ -4,7 +4,7 @@ from collections.abc import Iterator
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, File, HTTPException, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -18,6 +18,15 @@ from tools.weather import WeatherTool
 from tools.web_search import WebSearchTool
 from tools.wikipedia_search import WikipediaSearchTool
 from tools.arxiv_search import ArxivSearchTool
+from tools.document_search import DocumentSearchTool
+from utils.document_processing import (
+    DocumentError,
+    chunk_sections,
+    clean_filename,
+    embed_in_batches,
+    extract_sections,
+)
+from utils.document_store import DocumentStore
 from utils.config import load_config
 from utils.context_manager import ContextManager
 from utils.message import Message
