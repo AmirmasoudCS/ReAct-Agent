@@ -66,6 +66,25 @@ class LLMClient:
             api_key=os.getenv("OLLAMA_API_KEY", "ollama"),
         )
 
+    def embed(self, texts: list[str], model: str) -> list[list[float]]:
+        """Return one embedding vector per input text, in input order."""
+        if not texts:
+            return []
+
+        response = self.client.embeddings.create(
+            model=model,
+            input=texts,
+            encoding_format="float",
+        )
+        items = sorted(response.data, key=lambda item: item.index)
+
+        if len(items) != len(texts):
+            raise ValueError(
+                "The embedding model returned the wrong number of vectors."
+            )
+
+        return [list(item.embedding) for item in items]
+
     def _build_request(
         self,
         system_prompt: str,
