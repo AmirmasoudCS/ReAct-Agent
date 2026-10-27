@@ -17,6 +17,7 @@ from tools.registry import ToolRegistry
 from tools.weather import WeatherTool
 from tools.web_search import WebSearchTool
 from tools.wikipedia_search import WikipediaSearchTool
+from tools.arxiv_search import ArxivSearchTool
 from utils.config import load_config
 from utils.context_manager import ContextManager
 from utils.message import Message
@@ -124,6 +125,9 @@ def build_agent(session: dict[str, Any]) -> ReActAgent:
     )
     tools.register(
         WeatherTool(timeout=config["tools"]["timeout"])
+    )
+    tools.register(
+        ArxivSearchTool(timeout=config["tools"]["timeout"])
     )
 
     messages = [
