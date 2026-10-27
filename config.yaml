@@ -12,6 +12,16 @@ agent:
 tools:
   timeout: 15
 
+documents:
+  embedding_model: nomic-embed-text
+  document_prefix: "search_document: "   # nomic needs these two prefixes;
+  query_prefix: "search_query: "         # set both to "" for models that don't
+  chunk_chars: 900
+  chunk_overlap: 150
+  max_file_mb: 10
+  max_files_per_session: 5
+  max_chunks_per_file: 800
+
 context:
   context_window_tokens: 16384    # Must match the context length Ollama actually loads (num_ctx), not the model's maximum
   max_output_tokens: 2048         # Tokens reserved for the model's response (thinking models need headroom)

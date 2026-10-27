@@ -28,6 +28,16 @@ DEFAULTS = {
         "summary_max_tokens": 800,
         "summary_output_tokens": 800,
     },
+    "documents": {
+        "embedding_model": "nomic-embed-text",
+        "document_prefix": "search_document: ",
+        "query_prefix": "search_query: ",
+        "chunk_chars": 900,
+        "chunk_overlap": 150,
+        "max_file_mb": 10,
+        "max_files_per_session": 5,
+        "max_chunks_per_file": 800,
+    },
 }
 
 
