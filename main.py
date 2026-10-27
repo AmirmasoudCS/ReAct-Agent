@@ -9,6 +9,7 @@ from tools.datetime import DateTimeTool
 from tools.wikipedia_search import WikipediaSearchTool
 from tools.web_search import WebSearchTool
 from tools.weather import WeatherTool
+from tools.arxiv_search import ArxivSearchTool
 from tools.registry import ToolRegistry
 from utils.console import console, print_agent, print_error
 from utils.config import load_config
@@ -321,6 +322,7 @@ def main() -> None:
         tools.register(
             WeatherTool(timeout=config["tools"]["timeout"])
         )
+        tools.register(ArxivSearchTool(timeout=config["tools"]["timeout"]))
 
         # Initialize the LLM client.
         llm_config = config["llm"]
