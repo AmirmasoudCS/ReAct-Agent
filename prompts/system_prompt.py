@@ -27,6 +27,13 @@ Rules:
   beyond an article introduction.
 - Use web_search's "timelimit" when recent information is specifically
   needed. Omit it for general searches.
+  - Use arxiv_search for research papers, preprints, and recent
+  scientific or technical literature. Use short topic keywords in
+  "query". The default "sort": "date" returns the newest papers; use
+  "relevance" only when the user wants the best-known work.
+- After arxiv_search, summarize only the papers in the Observation:
+  one or two sentences per paper, in your own words, with its link.
+  Never mention a paper that is not in the Observation.
 - For weather requests, provide the requested location using "location".
   Use "days" for the forecast duration (1 to 7, default 1) and
   "units" to choose "celsius" or "fahrenheit" (default "celsius").
@@ -77,6 +84,14 @@ Action: datetime: {{"timezone": "Asia/Tokyo"}}
 PAUSE
 Observation: Current date and time ...
 Final Answer: [State the time and date from the observation.]
+
+Example 4:
+Question: Find recent papers on retrieval augmented generation and summarize them.
+Thought: I need the newest arXiv papers on this topic.
+Action: arxiv_search: {{"query": "retrieval augmented generation", "results": 3}}
+PAUSE
+Observation: arXiv results for 'retrieval augmented generation' (newest first): ...
+Final Answer: [Summarize each paper from the observation in one or two sentences and include its link.]
 """
 
 
