@@ -131,9 +131,37 @@ export function createHttpClient(baseUrl) {
     }
   }
 
+  // POST a FormData body (file upload). No Content-Type header is set on
+  // purpose: the browser adds it, including the multipart boundary.
+  async function upload(path, formData, { signal } = {}) {
+    let response;
+
+    try {
+      response = await fetch(`${baseUrl}${path}`, {
+        method: "POST",
+        signal,
+        body: formData,
+      });
+    } catch (error) {
+      if (error.name === "AbortError") {
+        throw error;
+      }
+      throw new ApiError("The server could not be reached.", 0);
+    }
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new ApiError(extractMessage(data, response.status), response.status);
+    }
+
+    return data;
+  }
+
   return {
     request,
     stream,
+    upload,
     get: (path, options) => request(path, { ...options, method: "GET" }),
     post: (path, body, options) =>
       request(path, { ...options, method: "POST", body }),

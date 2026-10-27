@@ -4,6 +4,7 @@
 //   Session: { id, name, created_at, updated_at, message_count, messages? }
 //   Message: { id, role: "user" | "assistant", content, activity: Activity[] }
 //   Activity: { type: "planning" | "action" | "observation", ... }
+//   Document: { id, name, chunk_count, pages, size_bytes, uploaded_at }
 //
 // For a different backend, rewrite this file and leave the rest alone.
 
@@ -42,6 +43,21 @@ export function createAgentApi(http) {
     updateSettings: (changes) => http.patch("/settings", changes),
 
     listModels: () => http.get("/models"),
+
+    // Documents attached to a conversation. The form field must be named
+    // "file" to match `file: UploadFile = File(...)` in the backend.
+    listDocuments: (id) => http.get(`${sessionPath(id)}/documents`),
+
+    uploadDocument: (id, file) => {
+      const form = new FormData();
+      form.append("file", file);
+      return http.upload(`${sessionPath(id)}/documents`, form);
+    },
+
+    deleteDocument: (id, documentId) =>
+      http.delete(
+        `${sessionPath(id)}/documents/${encodeURIComponent(documentId)}`,
+      ),
 
     sendMessage: async (id, content) => {
       const result = await http.post(`${sessionPath(id)}/messages`, {

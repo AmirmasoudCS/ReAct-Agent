@@ -19,8 +19,15 @@ const TOOLS = [
   },
   {
     name: "arxiv_search",
-    description: "Recent research papers from arXiv, with authors, dates, links and abstracts.",
+    description:
+      "Recent research papers from arXiv, with authors, dates, links and abstracts.",
     example: "Find recent papers on retrieval augmented generation",
+  },
+  {
+    name: "document_search",
+    description:
+      "Questions about files you attach (.txt, .md, .pdf, .docx). Available once a document is attached to the conversation.",
+    example: "What does the attached report say about revenue?",
   },
   {
     name: "weather",
@@ -96,6 +103,29 @@ export default function HelpModal({ onClose }) {
             <li>
               Answers appear as they are written. Tool calls show up as soon
               as the agent makes them.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Documents</h3>
+          <ul>
+            <li>
+              Click the paperclip to attach .txt, .md, .pdf or .docx files
+              (up to 10 MB each, 5 per conversation). They belong to the
+              current conversation only.
+            </li>
+            <li>
+              Processing can take a while for long files. You can send
+              messages again once it finishes.
+            </li>
+            <li>
+              Remove a file with the x on its chip. Deleting the
+              conversation also deletes its documents.
+            </li>
+            <li>
+              Scanned PDFs and images are not supported, because there is no
+              text to read.
             </li>
           </ul>
         </section>

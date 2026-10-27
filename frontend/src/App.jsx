@@ -7,11 +7,13 @@ import ChatInput from "./components/ChatInput";
 import SettingsModal from "./components/SettingsModal";
 import HelpModal from "./components/HelpModal";
 import ArxivResults from "./components/ArxivResults";
+import DocumentResults from "./components/DocumentResults";
 import { API_BASE_URL, APP_NAME } from "./config";
 import { createHttpClient } from "./api/httpClient";
 import { createAgentApi } from "./api/agentApi";
 import { useSessions } from "./hooks/useSessions";
 import { useChat } from "./hooks/useChat";
+import { useDocuments } from "./hooks/useDocuments";
 import "./App.css";
 import { usePersistentState } from "./hooks/usePersistentState";
 
@@ -21,6 +23,7 @@ const api = createAgentApi(createHttpClient(API_BASE_URL));
 // Custom result views, keyed by lowercase tool name.
 const toolRenderers = {
   arxiv_search: (step) => <ArxivResults text={step.result} />,
+  document_search: (step) => <DocumentResults text={step.result} />,
 };
 
 export default function App() {
@@ -50,6 +53,17 @@ export default function App() {
     api,
     sessionId: activeSessionId,
     patchSession,
+    onError: reportError,
+  });
+
+  const {
+    documents,
+    isUploading,
+    upload: uploadDocuments,
+    remove: removeDocument,
+  } = useDocuments({
+    api,
+    sessionId: activeSessionId,
     onError: reportError,
   });
 
@@ -115,6 +129,10 @@ export default function App() {
               isLoading ||
               connectionStatus !== "connected"
             }
+            documents={documents}
+            isUploading={isUploading}
+            onUpload={uploadDocuments}
+            onRemoveDocument={removeDocument}
           />
         </footer>
       </main>
