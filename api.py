@@ -154,6 +154,24 @@ def build_agent(session: dict[str, Any]) -> ReActAgent:
         ArxivSearchTool(timeout=config["tools"]["timeout"])
     )
 
+    store = get_document_store(session["session_id"])
+
+    if store.has_documents():
+        doc_config = config["documents"]
+        embedding_model = doc_config["embedding_model"]
+        query_prefix = doc_config["query_prefix"]
+
+        tools.register(
+            DocumentSearchTool(
+                store,
+                embed_query=lambda text: llm.embed(
+                    [query_prefix + text],
+                    model=embedding_model,
+                )[0],
+                embedding_model=embedding_model,
+            )
+        )
+
     messages = [
         Message(item["role"], item["content"])
         for item in session["messages"]
