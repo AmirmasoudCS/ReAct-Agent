@@ -1,0 +1,9 @@
+.arxiv__header { margin: 0 0 8px; font-size: 0.85em; opacity: 0.7; }
+.arxiv__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.arxiv__paper { padding-bottom: 10px; border-bottom: 1px solid rgba(128, 128, 128, 0.25); }
+.arxiv__paper:last-child { border-bottom: 0; padding-bottom: 0; }
+.arxiv__paper a, .arxiv__paper strong { font-weight: 600; }
+.arxiv__paper p { margin: 3px 0 0; }
+.arxiv__authors { font-size: 0.85em; }
+.arxiv__meta { font-size: 0.8em; opacity: 0.65; }
+.arxiv__abstract { font-size: 0.85em; line-height: 1.45; }
